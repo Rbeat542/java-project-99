@@ -1,0 +1,10 @@
+# BEGIN
+spring:
+  datasource:
+    username: sa
+    url: jdbc:h2:mem:test
+    password: 123
+  h2:
+    console:
+      enabled: true
+# END
