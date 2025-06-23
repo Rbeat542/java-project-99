@@ -3,7 +3,6 @@ package hexlet.code.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -14,15 +13,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.validation.constraints.Email;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-
-import java.time.LocalDateTime;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 

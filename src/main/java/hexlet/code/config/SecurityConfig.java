@@ -1,15 +1,16 @@
 package hexlet.code.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -23,7 +24,9 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+@EnableMethodSecurity
+public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
+
     @Autowired
     private JwtDecoder jwtDecoder;
 
@@ -39,20 +42,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector)
             throws Exception {
-        // По умолчанию все запрещено
+
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Разрешаем доступ только к /api/login, чтобы аутентифицироваться и получить токен
-                        //.requestMatchers("/users").permitAll()
-                        //.requestMatchers("/login").permitAll()
                         .requestMatchers("/welcome").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/users") .permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/index.html").permitAll()
+                        .requestMatchers("/assets/*").permitAll()
+                        .requestMatchers("/api/login").permitAll()
+//                        .requestMatchers("/api/users").hasRole("ADMIN")
+//                        .requestMatchers("/api/tasks").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                //.oauth2ResourceServer((rs) -> rs.jwt((jwt) -> jwt.decoder(jwtDecoder)))
-                //.httpBasic(Customizer.withDefaults())
+                .oauth2ResourceServer((rs) -> rs.jwt((jwt) -> jwt.decoder(jwtDecoder)))
+                .httpBasic(Customizer.withDefaults())
                 .build();
     }
 
@@ -63,9 +68,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider daoAuthProvider(AuthenticationManagerBuilder auth, UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public AuthenticationProvider daoAuthProvider(AuthenticationManagerBuilder auth, UserDetailsService
+            userDetailsService, PasswordEncoder passwordEncoder) {
         var provider = new DaoAuthenticationProvider(userDetailsService);
-        //provider.setUserDetailsService(userService);
+        provider.setUserDetailsService(userService);
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
