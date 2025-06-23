@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -75,7 +76,7 @@ class UserControllerTests {
     @Test
     public void testIndex() throws Exception {
         userRepository.save(testUser);
-        var result = mockMvc.perform(get("/api/users"))//.with(jwt()))
+        var result = mockMvc.perform(get("/api/users").with(jwt()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -87,7 +88,7 @@ class UserControllerTests {
     public void testShowUser() throws Exception {
         userRepository.save(testUser);
         var id = testUser.getId();
-        var request = get("/api/users/" + id);//.with(jwt()))
+        var request = get("/api/users/" + id).with(jwt());
 
         var result = mockMvc.perform(request)
                 .andExpect(status().isOk())
@@ -97,14 +98,16 @@ class UserControllerTests {
         var user = userRepository.findById(id).get();
         assertThat(user.getEmail()).isEqualTo(testUser.getEmail());
         assertThat(user.getPassword()).isEqualTo(testUser.getPassword());
-        /*assertThatJson(body).and(
+
+/*assertThatJson(body).and(
                 v -> v.node("firstName").isEqualTo(testUser.getFirstName()),
                 v -> v.node("email").isEqualTo(testUser.getEmail()));*/
+
     }
 
     @Test
     public void testCreateUser() throws Exception {
-        var request = post("/api/users")
+        var request = post("/api/users").with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(testUser));
 
@@ -121,7 +124,7 @@ class UserControllerTests {
     @Test
     public void testCreateUserWithInvalidPassword() throws Exception {
         testUser.setPasswordDigest("22");
-        var request = post("/api/users")
+        var request = post("/api/users").with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(testUser));
 
@@ -140,7 +143,7 @@ class UserControllerTests {
         data.setLastName("Paul");
 
         var id = testUser.getId();
-        var request = put("/api/users/" + id)
+        var request = put("/api/users/" + id).with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(data));
 
@@ -157,7 +160,7 @@ class UserControllerTests {
         userRepository.save(testUser);
         var id = testUser.getId();
 
-        var request =delete("/api/users/" + id);//.with(jwt()))
+        var request = delete("/api/users/" + id).with(jwt());
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
@@ -165,5 +168,7 @@ class UserControllerTests {
         assertThat(userRepository.findById(id)).isEmpty();
     }
 
-}
 
+    //добавить тест на неавторизованные действия
+
+}
