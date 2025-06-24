@@ -2,7 +2,7 @@ package hexlet.code.model;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -58,8 +58,8 @@ public class Task implements BaseEntity {
     private String body;
 
     @LastModifiedDate
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @CreatedDate
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 }

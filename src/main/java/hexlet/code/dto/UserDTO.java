@@ -3,7 +3,7 @@ package hexlet.code.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Setter
@@ -31,10 +31,10 @@ public class UserDTO {
     //private String password;
 
     //@CreatedDate //для автоматической генерации
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     //@LastModifiedDate //для автоматической генерации
-    //private LocalDate updatedAt;
+
 
     /*public UserDTO(String firstName, String lastName, String email, String password, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.firstName = firstName;

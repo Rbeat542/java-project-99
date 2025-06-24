@@ -1,6 +1,6 @@
 package hexlet.code.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -63,17 +63,10 @@ public class User implements BaseEntity, UserDetails {
     }
 
     @CreatedDate
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDate updatedAt;
-
-    /*public User(String firstName, String lastName, String email) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-    }
-    */
+    private LocalDateTime updatedAt;
 
     @Override
     public boolean isEnabled() {

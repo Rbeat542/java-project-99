@@ -99,9 +99,9 @@ class UserControllerTests {
         assertThat(user.getEmail()).isEqualTo(testUser.getEmail());
         assertThat(user.getPassword()).isEqualTo(testUser.getPassword());
 
-/*assertThatJson(body).and(
-                v -> v.node("firstName").isEqualTo(testUser.getFirstName()),
-                v -> v.node("email").isEqualTo(testUser.getEmail()));*/
+        /*assertThatJson(body).and(
+                        v -> v.node("firstName").isEqualTo(testUser.getFirstName()),
+                        v -> v.node("email").isEqualTo(testUser.getEmail()));*/
 
     }
 
@@ -130,7 +130,7 @@ class UserControllerTests {
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest());
-        ;
+
         assertThat(userRepository.findByEmail(testUser.getUsername()).isEmpty());
     }
 
@@ -138,21 +138,21 @@ class UserControllerTests {
     @Test
     public void testUpdateUser() throws Exception {
         userRepository.save(testUser);
-        var data = new User();
-        data.setFirstName("John");
-        data.setLastName("Paul");
-
+        var newUserData = Instancio.of(modelGenerator.getUserModel()).create();
         var id = testUser.getId();
-        var request = put("/api/users/" + id).with(jwt())
+        var request = put("/api/users/" + id)
+                //.with(jwt())
+                .with(jwt().jwt(jwt -> jwt.claim("email", testUser.getEmail()).subject(testUser.getEmail())))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(data));
+                .content(om.writeValueAsString(newUserData));
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        var user = userRepository.findByEmail(testUser.getUsername()).get();
-        assertThat(user.getFirstName()).isEqualTo(user.getFirstName());
-        assertThat(user.getLastName()).isEqualTo(user.getLastName());
+        var user = userRepository.findById(id).get();
+        assertThat(user.getFirstName()).isEqualTo(newUserData.getFirstName());
+        assertThat(user.getLastName()).isEqualTo(newUserData.getLastName());
+        assertThat(user.getEmail()).isEqualTo(newUserData.getEmail());
     }
 
     @Test
@@ -160,12 +160,28 @@ class UserControllerTests {
         userRepository.save(testUser);
         var id = testUser.getId();
 
-        var request = delete("/api/users/" + id).with(jwt());
-
+        var request = delete("/api/users/" + id)
+                //.with(jwt());
+                .with(jwt().jwt(jwt -> jwt.claim("email", testUser.getEmail()).subject(testUser.getEmail())));
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
         assertThat(userRepository.findById(id)).isEmpty();
+    }
+
+
+    @Test
+    public void testDeleteWrongUser() throws Exception {
+        userRepository.save(testUser);
+        var id = 1l;
+
+        var request = delete("/api/users/" + id)
+                //.with(jwt());
+                .with(jwt().jwt(jwt -> jwt.claim("email", testUser.getEmail()).subject(testUser.getEmail())));
+        mockMvc.perform(request)
+                .andExpect(status().is(403));
+
+        assertThat(userRepository.findById(id)).isNotEmpty();
     }
 
 

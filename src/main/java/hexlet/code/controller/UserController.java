@@ -2,6 +2,8 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.UserCreateDTO;
 import hexlet.code.dto.UserDTO;
+import hexlet.code.model.User;
+import hexlet.code.service.AccessChecker;
 import hexlet.code.util.UserUtils;
 import hexlet.code.dto.UserUpdateDTO;
 import hexlet.code.repository.UserRepository;
@@ -10,6 +12,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -33,6 +38,9 @@ public class UserController {
 
     @Autowired
     private UserUtils userUtils;
+
+    @Autowired
+    private AccessChecker accessChecker;
 
     @GetMapping("")
     public ResponseEntity<List<UserDTO>> index() {
@@ -52,10 +60,6 @@ public class UserController {
     }
 
     @PostMapping(path = "")
-    //@PreAuthorize(userRepository.findByEmail().get().getEmail() == userUtils.getCurrentUser().getName())
-    //@PreAuthorize("@userUtils.getCurrentUser() == userUtils.getTestUser()")
-    //@ResponseStatus(HttpStatus.CREATED)
-    //@PreAuthorize("@userUtils.getCurrentUser().getName() == (userUtils.getTestUser().getName() || userRepository.findById(#id).getEmail())")
     public ResponseEntity<UserDTO> create(@Valid @RequestBody UserCreateDTO userData) {
         var user =  userService.createUser(userData);
 
@@ -64,10 +68,8 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}")
-    //@PreAuthorize("(@userRepository.findById(#id).orElse(null)?.email == authentication.name) or (@userRepository.findById(#id).orElse(null)?.email == @userUtils.getTestUser().name)")
-    //@PreAuthorize("@userRepository.findById(#id).get().getEmail().equalsTo(authentication.name) || @userRepository.findById(#id).get().getEmail().equalsTo(@userUtils.getTestUser().getName())")
-    //@PreAuthorize("@userUtils.getCurrentUser().getName() == (userUtils.getTestUser().getName() || userRepository.findById(#id).getEmail())")
     @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
+    //@PreAuthorize("@accessChecker.canDoWithUser(#id, authentication)")  // с вынесением проверки в отдельный класс
     public ResponseEntity<UserDTO> patch(@PathVariable Long id, @RequestBody UserUpdateDTO dto) {
         var user = userService.updateUser(id, dto);
 
@@ -76,9 +78,8 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    //@PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name || @userUtils.getCurrentUser().getName() == @userUtils.getTestUser().getEmail()")
+    //@PreAuthorize("@accessChecker.canDeleteUser(#id, authentication)")  // с вынесением проверки в отдельный класс
     @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
-    //@PreAuthorize("@userUtils.getCurrentUser().getName() == (userUtils.getTestUser().getEmail() || userRepository.findById(#id).getEmail())")
     public void delete(@PathVariable Long id) {    // here was a 403 status in test , but should 200
         userService.deleteUser(id);
     }

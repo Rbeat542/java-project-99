@@ -24,7 +24,8 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
+
 public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -57,6 +58,11 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer((rs) -> rs.jwt((jwt) -> jwt.decoder(jwtDecoder)))
+/*                .oauth2ResourceServer((rs) -> rs.jwt((jwt) -> jwt
+                        .decoder(jwtDecoder)
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter()) // ✅ <--- вот это добавляем
+                ))*/
+
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
