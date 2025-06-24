@@ -14,8 +14,9 @@ RUN ./gradlew --no-daemon dependencies
 COPY src src
 COPY config config
 
-RUN openssl genpkey -out /src/main/resources/certs/private.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048
-RUN openssl rsa -in /src/main/resources/certs/private.pem -pubout -out /src/main/resources/certs/public.pem
+RUN mkdir -p /demo/src/main/resources/certs
+RUN openssl genpkey -out ./src/main/resources/certs/private.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+RUN openssl rsa -in ./src/main/resources/certs/private.pem -pubout -out ./src/main/resources/certs/public.pem
 
 RUN ./gradlew --no-daemon build
 
