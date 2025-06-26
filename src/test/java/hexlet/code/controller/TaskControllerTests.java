@@ -1,6 +1,8 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.dto.TaskCreateDTO;
+import hexlet.code.dto.TaskUpdateDTO;
 import hexlet.code.dto.UserUpdateDTO;
 import hexlet.code.mapper.TaskMapper;
 import hexlet.code.model.Task;
@@ -11,6 +13,7 @@ import org.instancio.Instancio;
 import org.instancio.Select;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.setExtractBareNamePropertyMethods;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -31,9 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class TaskControllerTests {
-
-    @Autowired
-    TaskMapper TaskMapper;
 
     @Autowired
     TaskRepository taskRepository;
@@ -52,8 +53,6 @@ class TaskControllerTests {
 
     private Task testTask;
 
-    private Faker faker;
-    
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
@@ -91,18 +90,25 @@ class TaskControllerTests {
 
     @Test
     public void testCreateTask() throws Exception {
+        var taskUpdateData = Instancio.of(modelGenerator.getTaskModel()).create();
+        var status = taskUpdateData.getTaskStatus();
+        var name = taskUpdateData.getName();
+
+        var updateData = new TaskCreateDTO();
+        updateData.setStatus(status.getSlug());
+        updateData.setTitle(name);
+
         var request = post("/api/tasks").with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(testTask));
+                .content(om.writeValueAsString(updateData));
 
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
-        var task = taskRepository.findByName(testTask.getName()).get();
+        var task = taskRepository.findByName(updateData.getTitle()).get();
         assertThat(task).isNotNull();
-        assertThat(task.getName()).isEqualTo(testTask.getName());
-        assertThat(task.getDescription()).isEqualTo(testTask.getDescription());
-        assertThat(task.getIndex()).isEqualTo(testTask.getIndex());
+        assertThat(task.getName()).isEqualTo(taskUpdateData.getName());
+        assertThat(task.getTaskStatus()).isEqualTo(taskUpdateData.getTaskStatus());
     }
 
     @Test
@@ -112,11 +118,15 @@ class TaskControllerTests {
 
         var taskUpdateData = Instancio.of(modelGenerator.getTaskModel()).create();
 
+        var updateData = new TaskUpdateDTO();
+        updateData.setTitle(JsonNullable.of(taskUpdateData.getName()));
+        updateData.setContent(JsonNullable.of(taskUpdateData.getDescription()));
+
         var request = put("/api/tasks/" + id)
                 .with(jwt())
                 //.with(jwt().jwt(jwt -> jwt.claim("name", testTask.getName()).subject(testTask.getName())))  // an error here to fix
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(taskUpdateData));
+                .content(om.writeValueAsString(updateData));
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());

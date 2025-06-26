@@ -30,9 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class LabelControllerTests {
 
     @Autowired
-    LabelMapper LabelMapper;
-
-    @Autowired
     LabelRepository labelRepository;
 
     @Autowired

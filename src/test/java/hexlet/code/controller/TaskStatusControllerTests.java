@@ -47,7 +47,7 @@ class TaskStatusControllerTests {
     @Autowired
     private ModelGenerator modelGenerator;
 
-    private TaskStatus testTaskStatus;
+    private TaskStatus testStatus;
     
     @BeforeEach
     public void setUp() {
@@ -55,12 +55,12 @@ class TaskStatusControllerTests {
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .apply(springSecurity())
                 .build();
-        testTaskStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
+        testStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
     }
 
     @Test
     public void testIndex() throws Exception {
-        taskStatusRepository.save(testTaskStatus);
+        taskStatusRepository.save(testStatus);
         var result = mockMvc.perform(get("/api/task_statuses").with(jwt()))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -71,8 +71,8 @@ class TaskStatusControllerTests {
 
     @Test
     public void testShowStatus() throws Exception {
-        taskStatusRepository.save(testTaskStatus);
-        var id = testTaskStatus.getId();
+        taskStatusRepository.save(testStatus);
+        var id = testStatus.getId();
         var request = get("/api/task_statuses/" + id).with(jwt());
 
         var result = mockMvc.perform(request)
@@ -80,33 +80,32 @@ class TaskStatusControllerTests {
                 .andReturn();
 
         var task = taskStatusRepository.findById(id).get();
-        assertThat(task.getName()).isEqualTo(testTaskStatus.getName());
-        assertThat(task.getSlug()).isEqualTo(testTaskStatus.getSlug());
+        assertThat(task.getName()).isEqualTo(testStatus.getName());
+        assertThat(task.getSlug()).isEqualTo(testStatus.getSlug());
     }
 
     @Test
     public void testCreateStatus() throws Exception {
         var request = post("/api/task_statuses").with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(testTaskStatus));
+                .content(om.writeValueAsString(testStatus));
 
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
-        var task = taskStatusRepository.findBySlug(testTaskStatus.getSlug()).get();
+        var task = taskStatusRepository.findBySlug(testStatus.getSlug()).get();
         assertThat(task).isNotNull();
-        assertThat(task.getName()).isEqualTo(testTaskStatus.getName());
-        assertThat(task.getSlug()).isEqualTo(testTaskStatus.getSlug());
+        assertThat(task.getName()).isEqualTo(testStatus.getName());
+        assertThat(task.getSlug()).isEqualTo(testStatus.getSlug());
     }
 
     @Test
     public void testUpdateStatus() throws Exception {
-        taskStatusRepository.save(testTaskStatus);
-        var id = testTaskStatus.getId();
-        var newTaskData = Instancio.of(modelGenerator.getTaskModel()).create();
+        taskStatusRepository.save(testStatus);
+        var id = testStatus.getId();
+        var newTaskData = Instancio.of(modelGenerator.getTaskStatusModel()).create();
         var request = put("/api/task_statuses/" + id)
                 .with(jwt())
-                //.with(jwt().jwt(jwt -> jwt.claim("name", testTaskStatus.getName()).subject(testTaskStatus.getName())))  // an error here to fix
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(newTaskData));
 
@@ -119,8 +118,8 @@ class TaskStatusControllerTests {
 
     @Test
     public void testDeleteStatus() throws Exception {
-        taskStatusRepository.save(testTaskStatus);
-        var id = testTaskStatus.getId();
+        taskStatusRepository.save(testStatus);
+        var id = testStatus.getId();
 
         var request = delete("/api/task_statuses/" + id)
                 .with(jwt());
@@ -133,8 +132,8 @@ class TaskStatusControllerTests {
 
     @Test
     public void testDeleteUnauthorizedStatus() throws Exception {
-        taskStatusRepository.save(testTaskStatus);
-        var id = testTaskStatus.getId();
+        taskStatusRepository.save(testStatus);
+        var id = testStatus.getId();
 
         var request = delete("/api/task_statuses/" + id);
         mockMvc.perform(request)

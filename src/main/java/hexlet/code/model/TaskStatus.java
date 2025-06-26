@@ -20,7 +20,7 @@ import lombok.ToString;
 @Setter
 @EntityListeners(AuditingEntityListener.class)
 @ToString(includeFieldNames = true, onlyExplicitlyIncluded = true)
-//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "task_statuses")
 public class TaskStatus implements BaseEntity {
 

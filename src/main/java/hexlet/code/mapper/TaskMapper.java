@@ -36,7 +36,7 @@ public abstract class TaskMapper {
 
     @Mapping(target = "name", source = "title")
     @Mapping(target = "description", source = "content")
-    @Mapping(target = "taskStatus", source = "status")//, qualifiedByName = "mapStatusByName")
+    @Mapping(target = "taskStatus", source = "status")//, qualifiedByName = "mapStatusByName")   // LAST FIX IS HERE
     @Mapping(target = "assignee", source = "assignee_id", qualifiedByName = "mapAssignee")// PROBLEM!
     @Mapping(target = "labels", source = "labelIds", qualifiedByName = "mapLabels")
     public abstract Task map(TaskCreateDTO dto);
@@ -53,9 +53,9 @@ public abstract class TaskMapper {
     public abstract void update(TaskUpdateDTO dto, @MappingTarget Task model);
 
     //@Named("mapStatusByName")
-    protected TaskStatus map(String statusName) { //!!!
-        return taskStatusRepository.findBySlug(statusName)
-                .orElseThrow(() -> new IllegalArgumentException("No TaskStatus with name: " + statusName));
+    protected TaskStatus map(String statusSlug) { //!!!
+        return taskStatusRepository.findBySlug(statusSlug)
+                .orElseThrow(() -> new IllegalArgumentException("No TaskStatus with slug: " + statusSlug));
     }
 
     protected String map(TaskStatus status) { //!!!

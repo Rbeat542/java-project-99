@@ -5,6 +5,9 @@ import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
+import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import net.datafaker.Faker;
@@ -14,19 +17,34 @@ import org.instancio.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 import static org.instancio.Select.field;
 
-@Getter
+//@Getter
 @Component
 public class ModelGenerator {
-    //private Model<Article> articleModel;
     private Model<TaskStatus> taskStatusModel;
     private Model<User> userModel;
     private Model<Task> taskModel;
     private Model<Label> labelModel;
+    private Set<Label> labelSet;
+
+    private Label label;
+    private TaskStatus taskStatus;
+    private User user;
 
     @Autowired
     private Faker faker;
+
+    @Autowired
+    private LabelRepository labelRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TaskStatusRepository taskStatusRepository;
 
     @PostConstruct
     private void init() {
@@ -38,24 +56,59 @@ public class ModelGenerator {
                 .supply(field(User::getPasswordDigest), () -> faker.internet().password(3, 20))
                 .toModel();
 
+        user = Instancio.of(userModel).create();
+        userRepository.save(user);
+
+
         taskStatusModel = Instancio.of(TaskStatus.class)
                 .ignore(field(TaskStatus::getId))
                 .supply(field(TaskStatus::getName), () -> faker.lorem().word())
                 .supply(field(TaskStatus::getSlug), () -> faker.lorem().word())
                 .toModel();
 
+        taskStatus = Instancio.of(taskStatusModel).create();
+        taskStatusRepository.save(taskStatus);
+
+
+        labelModel = Instancio.of(Label.class)
+                .ignore(field(Label::getId))
+                .supply(field(Label::getName), () -> faker.lorem().characters(3,1000))
+                .toModel();
+
+        label = Instancio.of(labelModel).create();
+        labelRepository.save(label);
+        labelSet = Set.of(label);
+
         taskModel = Instancio.of(Task.class)
                 .ignore(field(Task::getId))
                 .supply(field(Task::getIndex), () -> Long.parseLong(faker.number().digits(4)))
                 .supply(field(Task::getName), () -> faker.lorem().word())
                 .supply(field(Task::getDescription), () -> faker.lorem().sentence())
-                .supply(Select.field(Task::getTaskStatus), () -> Instancio.of(taskStatusModel).create())
-                .supply(field(Task::getLabels), () -> Instancio.of(labelModel).create()) // HERE !!
+                .supply(Select.field(Task::getTaskStatus), () -> taskStatus)
+                .supply(field(Task::getLabels), () -> labelSet)
+                .supply(field(Task::getAssignee), () -> user)
+                //.supply(field(Task::getLabels), () -> labelModel) // HERE !!
                 .toModel();
 
-        labelModel = Instancio.of(Label.class)
-                .ignore(field(Label::getId))
-                .supply(field(Label::getName), () -> faker.lorem().word())
-                .toModel();
+    }
+
+    public Model<TaskStatus> getTaskStatusModel() {
+        return taskStatusModel;
+    }
+
+    public Model<User> getUserModel() {
+        return userModel;
+    }
+
+    public Model<Task> getTaskModel() {
+        return taskModel;
+    }
+
+    public Model<Label> getLabelModel() {
+        return labelModel;
+    }
+
+    public Faker getFaker() {
+        return faker;
     }
 }
