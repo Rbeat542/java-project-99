@@ -32,9 +32,8 @@ public class User implements BaseEntity, UserDetails {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    //@GeneratedValue(strategy= GenerationType.AUTO)
-    //@ToString.Include
-    @EqualsAndHashCode.Include
+    //@EqualsAndHashCode.Include
+    //@OneToMany(mappedBy = "assignee")
     private long id;
 
     //@ToString.Include
@@ -68,17 +67,18 @@ public class User implements BaseEntity, UserDetails {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @Override
+  /*  @Override
     public boolean isEnabled() {
         return true;
     }
-
+*/
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return new ArrayList<GrantedAuthority>();
     }
 
-    @Override
+    /*
+  @Override
     public boolean isAccountNonExpired() {
         return true;
     }
@@ -91,5 +91,5 @@ public class User implements BaseEntity, UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
-    }
+    }*/
 }

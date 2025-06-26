@@ -6,7 +6,6 @@ import hexlet.code.dto.UserCreateDTO;
 import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.data.crossstore.ChangeSetPersister;
-//import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import hexlet.code.mapper.UserMapper;
 

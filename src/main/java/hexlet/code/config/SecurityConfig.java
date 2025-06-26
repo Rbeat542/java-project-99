@@ -52,17 +52,13 @@ public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
                         .requestMatchers("/index.html").permitAll()
                         .requestMatchers("/assets/*").permitAll()
                         .requestMatchers("/api/login").permitAll()
-//                        .requestMatchers("/api/users").hasRole("ADMIN")
-//                        .requestMatchers("/api/tasks").hasRole("ADMIN")
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer((rs) -> rs.jwt((jwt) -> jwt.decoder(jwtDecoder)))
-/*                .oauth2ResourceServer((rs) -> rs.jwt((jwt) -> jwt
-                        .decoder(jwtDecoder)
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter()) // ✅ <--- вот это добавляем
-                ))*/
-
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
