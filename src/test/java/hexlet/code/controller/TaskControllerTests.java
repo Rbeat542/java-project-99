@@ -105,7 +105,8 @@ class TaskControllerTests {
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
-        var task = taskRepository.findByName(updateData.getTitle()).get();
+        //var task = taskRepository.findByName(updateData.getTitle()).get();
+        var task = taskRepository.findFirstByNameOrderByCreatedAtDesc(updateData.getTitle()).get();
         assertThat(task).isNotNull();
         assertThat(task.getName()).isEqualTo(taskUpdateData.getName());
         assertThat(task.getTaskStatus()).isEqualTo(taskUpdateData.getTaskStatus());

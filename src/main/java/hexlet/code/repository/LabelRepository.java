@@ -10,6 +10,6 @@ import java.util.Optional;
 
 
 @Repository
-public interface LabelRepository extends JpaRepository<Label, Long>, JpaSpecificationExecutor<TaskStatus> {
+public interface LabelRepository extends JpaRepository<Label, Long>, JpaSpecificationExecutor<Label> {
     Optional<Label> findByName(String name);
 }
