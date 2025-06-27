@@ -1,7 +1,0 @@
-# BEGIN
-spring:
-  datasource:
-    username: admin
-    url: postgresSQL:h2:file:./test
-    password: admin
-# END

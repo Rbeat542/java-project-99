@@ -1,9 +1,9 @@
 # BEGIN
 spring:
   datasource:
-    username: sa
+    username:
     url: jdbc:h2:mem:test
-    password: 123
+    password:
   h2:
     console:
       enabled: true

@@ -38,7 +38,7 @@ dependencies {
 	implementation("org.openapitools:jackson-databind-nullable:0.2.6")
 	//implementation("org.slf4j:slf4j-simple:2.0.16")
 	runtimeOnly("com.h2database:h2")
-	//runtimeOnly("org.postgresql:postgresql")
+	runtimeOnly("org.postgresql:postgresql")
 	implementation("org.postgresql:postgresql:42.7.5")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
