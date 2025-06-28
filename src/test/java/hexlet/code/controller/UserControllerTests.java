@@ -1,18 +1,14 @@
 package hexlet.code.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import hexlet.code.dto.UserUpdateDTO;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
-
 import org.instancio.Instancio;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -29,6 +24,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 import java.nio.charset.StandardCharsets;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -38,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+//@Transactional
 class UserControllerTests {
 
     @Autowired
@@ -175,8 +172,8 @@ class UserControllerTests {
     @Test
     public void testDeleteWrongUser() throws Exception {
         userRepository.save(testUser);
-        var id = 1l;
-
+        var admin = userRepository.findByEmail("hexlet@example.com").get();
+        var id = admin.getId();
         var request = delete("/api/users/" + id)
                 //.with(jwt());
                 .with(jwt().jwt(jwt -> jwt.claim("email", testUser.getEmail()).subject(testUser.getEmail())));

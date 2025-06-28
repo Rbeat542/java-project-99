@@ -1,7 +1,6 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.mapper.LabelMapper;
 import hexlet.code.model.Label;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.util.ModelGenerator;
@@ -14,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+//@Transactional
 class LabelControllerTests {
 
     @Autowired
@@ -45,7 +46,7 @@ class LabelControllerTests {
     private ModelGenerator modelGenerator;
 
     private Label testLabel;
-    
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
