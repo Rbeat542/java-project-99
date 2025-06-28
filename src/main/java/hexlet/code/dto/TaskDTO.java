@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Setter
@@ -15,7 +16,7 @@ import java.util.Set;
 public class TaskDTO {
     private Long id;
 
-    private Long index;
+    private Integer index;
 
     private String title;
 
@@ -27,7 +28,6 @@ public class TaskDTO {
 
     private LocalDateTime createdAt;
 
-    //private Set<LabelDTO> labels; // !!!
-    private Set<Long> labelIds;
+    private Set<Long> taskLabelIds = new HashSet<>();   // обязательно присвоить новый массив
 
 }

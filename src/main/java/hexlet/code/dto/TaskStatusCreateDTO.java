@@ -2,6 +2,7 @@ package hexlet.code.dto;
 
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,9 +11,11 @@ import lombok.Setter;
 public class TaskStatusCreateDTO {
 
     @NotNull
+    @Size(min = 1)
     private String slug;
 
     @NotNull
+    @Size(min = 1)
     private String name;
 
 }

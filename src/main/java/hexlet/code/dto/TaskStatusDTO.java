@@ -1,8 +1,6 @@
 package hexlet.code.dto;
 
-
 import java.time.LocalDateTime;
-
 import lombok.Getter;
 import lombok.Setter;
 

@@ -3,6 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.dto.TaskCreateDTO;
 import hexlet.code.dto.TaskDTO;
 import hexlet.code.dto.TaskUpdateDTO;
+import hexlet.code.dto.TaskParamsDTO;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.service.TaskService;
 import jakarta.validation.Valid;
@@ -23,11 +24,23 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @GetMapping("/tasks")
+/*    @GetMapping("/tasks")  // SIMPLY GET ALL !!!
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<TaskDTO>> index() {
         var tasks = taskService.getAll();
 
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(tasks.size()))
+                .body(tasks);
+    }*/
+
+    @GetMapping("/tasks")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<TaskDTO>> index(@Valid TaskParamsDTO params) {
+        List<TaskDTO>  tasks = taskService.getAllWithParams(params);
+
+        //List<TaskDTO> tasks = taskService.getTasks(filter);
+        //return ResponseEntity.ok(tasks);
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(tasks.size()))
                 .body(tasks);

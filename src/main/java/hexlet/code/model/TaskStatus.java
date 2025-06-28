@@ -1,14 +1,12 @@
 package hexlet.code.model;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
-
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,10 +29,12 @@ public class TaskStatus implements BaseEntity {
     private Long id;
 
     @NotNull()
+    @Size(min = 1)
     //@ToString.Include
     private String name;
 
     @NotNull
+    @Size(min = 1)
     //@OneToOne(mappedBy = "task")
     private String slug;
 

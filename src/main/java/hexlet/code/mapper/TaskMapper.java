@@ -38,14 +38,14 @@ public abstract class TaskMapper {
     @Mapping(target = "description", source = "content")
     @Mapping(target = "taskStatus", source = "status")//, qualifiedByName = "mapStatusByName")   // LAST FIX IS HERE
     @Mapping(target = "assignee", source = "assignee_id", qualifiedByName = "mapAssignee")// PROBLEM!
-    @Mapping(target = "labels", source = "labelIds", qualifiedByName = "mapLabels")
+    @Mapping(target = "labels", source = "taskLabelIds", qualifiedByName = "mapLabels")
     public abstract Task map(TaskCreateDTO dto);
 
     @Mapping(target = "title", source = "name")
     @Mapping(target = "content", source = "description")
     @Mapping(target = "assignee_id", source = "assignee.id")
     @Mapping(target = "status", source = "taskStatus")
-    @Mapping(target = "labelIds", source = "labels", qualifiedByName = "mapLabelsToDTO")
+    @Mapping(target = "taskLabelIds", source = "labels", qualifiedByName = "mapLabelsToDTO")
     public abstract TaskDTO map(Task model);
 
     @Mapping(target = "name", source = "title")
@@ -90,4 +90,5 @@ public abstract class TaskMapper {
                 .map(label -> label.getId())
                 .collect(Collectors.toSet());
     }
+
 }

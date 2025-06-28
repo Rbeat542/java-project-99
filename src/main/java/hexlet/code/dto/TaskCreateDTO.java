@@ -16,7 +16,7 @@ import java.util.Set;
 @Getter
 public class TaskCreateDTO {
 
-    private Long index;
+    private Integer index;
 
     @NotNull
     @Size(min = 1)
@@ -29,8 +29,8 @@ public class TaskCreateDTO {
 
     private Long assignee_id;
 
-    @JsonProperty("taskLabelIds")
-    private Set<Long> labelIds; // to learn
+    //@JsonProperty("taskLabelIds")
+    private Set<Long> taskLabelIds;
 
 
 }
