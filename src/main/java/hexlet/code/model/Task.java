@@ -2,16 +2,12 @@ package hexlet.code.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.HashSet;
-import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -22,7 +18,6 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Setter
 @EntityListeners(AuditingEntityListener.class)
 @ToString(includeFieldNames = true, onlyExplicitlyIncluded = true)
-//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "tasks")
 public class Task implements BaseEntity {
 
