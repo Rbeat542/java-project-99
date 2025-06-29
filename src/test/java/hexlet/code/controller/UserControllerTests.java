@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-//@Transactional
+@Transactional
 class UserControllerTests {
 
     @Autowired
