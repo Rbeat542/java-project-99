@@ -2,6 +2,9 @@ package hexlet.code.controller;
 
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
+import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import org.junit.jupiter.api.Test;
@@ -23,8 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
 import java.nio.charset.StandardCharsets;
-
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -33,14 +34,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 class UserControllerTests {
 
     @Autowired
-    UserMapper userMapper;
+    LabelRepository labelRepository;
+
+    @Autowired
+    TaskRepository taskRepository;
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    UserMapper userMapper;
 
     @Autowired
     MockMvc mockMvc;
@@ -59,9 +68,10 @@ class UserControllerTests {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     @BeforeEach
     public void setUp() {
+        modelGenerator.init();
+
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .apply(springSecurity())

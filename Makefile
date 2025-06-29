@@ -1,12 +1,4 @@
-setup:
-	npm install
-	./gradlew wrapper --gradle-version 8.14.1
-	./gradlew build
-
-frontend:
-	make -C frontend start
-
-backend:
+run:
 	./gradlew bootRun --args='--spring.profiles.active=development'
 
 clean:
@@ -15,41 +7,21 @@ clean:
 build:
 	./gradlew clean build
 
-dev:
-	heroku local
-
 reload-classes:
 	./gradlew -t classes
-
-start-prod:
-	./gradlew bootRun --args='--spring.profiles.active=production'
 
 install:
 	./gradlew installDist
 
-# start-dist:
-# 	./build/install/app/bin/app
+makecert:
+	mkdir -p ./src/main/resources/certs
+	openssl genpkey -out ./src/main/resources/certs/private.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+	openssl rsa -in ./src/main/resources/certs/private.pem -pubout -out ./src/main/resources/certs/public.pem
 
 lint:
 	./gradlew checkstyleMain checkstyleTest
 
-test:
-	./gradlew test
-
 report:
 	./gradlew jacocoTestReport
 
-update-js-deps:
-	cd frontend && npx ncu -u
-
-update-deps:
-	./gradlew refreshVersions
-
-# generate-migrations:
-# 	gradle diffChangeLog
-
-# db-migrate:
-# 	./gradlew update
-
-
-.PHONY: build frontend
+.PHONY: build

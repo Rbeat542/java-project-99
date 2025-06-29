@@ -47,7 +47,7 @@ public class ModelGenerator {
     private TaskStatusRepository taskStatusRepository;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         userModel = Instancio.of(User.class)
                 .ignore(field(User::getId))
                 .supply(field(User::getFirstName), () -> faker.name().firstName())
@@ -57,7 +57,7 @@ public class ModelGenerator {
                 .toModel();
 
         user = Instancio.of(userModel).create();
-        userRepository.save(user);
+        user = userRepository.save(user);
 
 
         taskStatusModel = Instancio.of(TaskStatus.class)
@@ -67,16 +67,16 @@ public class ModelGenerator {
                 .toModel();
 
         taskStatus = Instancio.of(taskStatusModel).create();
-        taskStatusRepository.save(taskStatus);
+        taskStatus = taskStatusRepository.save(taskStatus);
 
 
         labelModel = Instancio.of(Label.class)
                 .ignore(field(Label::getId))
-                .supply(field(Label::getName), () -> faker.lorem().characters(3,1000))
+                .supply(field(Label::getName), () -> faker.lorem().characters(3,20))
                 .toModel();
 
         label = Instancio.of(labelModel).create();
-        labelRepository.save(label);
+        label = labelRepository.save(label);
         labelSet = Set.of(label);
 
         taskModel = Instancio.of(Task.class)
@@ -87,7 +87,6 @@ public class ModelGenerator {
                 .supply(Select.field(Task::getTaskStatus), () -> taskStatus)
                 .supply(field(Task::getLabels), () -> labelSet)
                 .supply(field(Task::getAssignee), () -> user)
-                //.supply(field(Task::getLabels), () -> labelModel) // HERE !!
                 .toModel();
 
     }

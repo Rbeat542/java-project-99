@@ -31,7 +31,6 @@ public class CustomUserDetailsService implements UserDetailsManager {
         return user;
     }
 
-    //@PreAuthorize("hasRoles('ADMIN')")
     @Override
     public void createUser(UserDetails userData) {
         var user = new User();

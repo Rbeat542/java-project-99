@@ -4,7 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.TaskCreateDTO;
 import hexlet.code.dto.TaskUpdateDTO;
 import hexlet.code.model.Task;
+import hexlet.code.model.User;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
@@ -30,11 +34,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-//@Transactional
 class TaskControllerTests {
 
     @Autowired
+    LabelRepository labelRepository;
+
+    @Autowired
     TaskRepository taskRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    TaskStatusRepository taskStatusRepository;
 
     @Autowired
     MockMvc mockMvc;
@@ -48,10 +60,14 @@ class TaskControllerTests {
     @Autowired
     private ModelGenerator modelGenerator;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private Task testTask;
 
     @BeforeEach
     public void setUp() {
+        modelGenerator.init();
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .apply(springSecurity())
