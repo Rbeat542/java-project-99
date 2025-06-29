@@ -8,4 +8,8 @@ spring:
   h2:
     console:
       enabled: true
+
+  sentry:
+    dsn: ""
+    enabled: false
 # END
