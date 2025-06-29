@@ -1,6 +1,8 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.dto.TaskCreateDTO;
+import hexlet.code.dto.TaskStatusCreateDTO;
 import hexlet.code.mapper.TaskStatusMapper;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
@@ -20,9 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
 import java.nio.charset.StandardCharsets;
-
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -77,6 +77,8 @@ class TaskStatusControllerTests {
         testStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
     }
 
+//    @BeforeEach
+
     @Test
     public void testIndex() throws Exception {
         taskStatusRepository.save(testStatus);
@@ -105,17 +107,21 @@ class TaskStatusControllerTests {
 
     @Test
     public void testCreateStatus() throws Exception {
+        var newDTO = new TaskStatusCreateDTO();
+        newDTO.setName("NEW NAME");
+        newDTO.setSlug("new_slug");
+
         var request = post("/api/task_statuses").with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(testStatus));
+                .content(om.writeValueAsString(newDTO));
 
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
-        var task = taskStatusRepository.findBySlug(testStatus.getSlug()).get();
+        var task = taskStatusRepository.findBySlug(newDTO.getSlug()).get();
         assertThat(task).isNotNull();
-        assertThat(task.getName()).isEqualTo(testStatus.getName());
-        assertThat(task.getSlug()).isEqualTo(testStatus.getSlug());
+        assertThat(task.getName()).isEqualTo(newDTO.getName());
+        assertThat(task.getSlug()).isEqualTo(newDTO.getSlug());
     }
 
     @Test

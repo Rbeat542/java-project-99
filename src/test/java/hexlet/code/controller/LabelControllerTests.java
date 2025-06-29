@@ -1,6 +1,7 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.AppApplication;
 import hexlet.code.model.Label;
 import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
@@ -29,8 +30,9 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+
 @AutoConfigureMockMvc
+@SpringBootTest(classes = AppApplication.class)
 class LabelControllerTests {
 
     @Autowired
