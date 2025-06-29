@@ -32,7 +32,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
 
       - name: Generate key for tests
-        run:
+        run: |
           mkdir -p src/test/resources/certs
           openssl genpkey -out src/test/resources/certs/private.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048
           openssl rsa -in src/test/resources/certs/private.pem -pubout -out src/test/resources/certs/public.pem
