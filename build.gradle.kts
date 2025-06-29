@@ -7,6 +7,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.sonarqube") version "6.2.0.5505"
 	id("io.freefair.lombok") version "8.13.1"
+	id("io.sentry.jvm.gradle") version "5.8.0"
 	jacoco
 }
 
@@ -86,7 +87,7 @@ sentry {
 	includeSourceContext = true
 
 	org = "alexander-m3"
-	projectName = "java-spring-boot"
+	projectName = "java-spring-boot99"
 	authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }
 
