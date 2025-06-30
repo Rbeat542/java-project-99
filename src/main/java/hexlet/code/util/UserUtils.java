@@ -3,12 +3,11 @@ package hexlet.code.util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 
 @Component
-public class UserUtils {
+public final class UserUtils {
     @Autowired
     private UserRepository userRepository;
 
@@ -20,7 +19,6 @@ public class UserUtils {
         var email = authentication.getName();
         return userRepository.findByEmail(email).get();
     }
-
 
     public User getTestUser() {
         return  userRepository.findByEmail("hexlet@example.com")

@@ -1,10 +1,16 @@
 package hexlet.code.mapper;
 
-import hexlet.code.dto.UserCreateDTO;
-import hexlet.code.dto.UserDTO;
-import hexlet.code.dto.UserUpdateDTO;
+import hexlet.code.dto.user.UserCreateDTO;
+import hexlet.code.dto.user.UserDTO;
+import hexlet.code.dto.user.UserUpdateDTO;
 import hexlet.code.model.User;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.BeforeMapping;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -15,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
         unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 
-public abstract class UserMapper {  //всю работу за нас делает MapStruct
+public abstract class UserMapper {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -28,7 +34,7 @@ public abstract class UserMapper {  //всю работу за нас делае
     public abstract void update(UserUpdateDTO dto, @MappingTarget User model);
 
     @BeforeMapping
-    public void encryptPassword(UserCreateDTO data) {
+    public final void encryptPassword(UserCreateDTO data) {
         var password = data.getPassword();
         data.setPassword(passwordEncoder.encode(password));
     }

@@ -1,13 +1,9 @@
-package hexlet.code.dto;
+package hexlet.code.dto.task;
 
-
-import hexlet.code.model.TaskStatus;
-import hexlet.code.model.User;
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,9 +20,10 @@ public class TaskDTO {
 
     private String status;
 
-    private Long assignee_id;
+    @JsonProperty("assignee_id")
+    private Long assigneeId;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     private Set<Long> taskLabelIds = new HashSet<>();   // обязательно присвоить новый массив
 

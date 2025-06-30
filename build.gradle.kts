@@ -2,7 +2,7 @@
 plugins {
 	//java
 	application
-	// checkstyle
+	checkstyle
 	id("org.springframework.boot") version "3.5.0"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.sonarqube") version "6.2.0.5505"
@@ -29,7 +29,6 @@ repositories {
 }
 
 dependencies {
-	//testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
@@ -41,7 +40,6 @@ dependencies {
 	implementation("net.datafaker:datafaker:2.4.2")
 	implementation("org.instancio:instancio-junit:3.3.1")
 	implementation("org.openapitools:jackson-databind-nullable:0.2.6")
-	//implementation("org.slf4j:slf4j-simple:2.0.16")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
 	implementation("org.postgresql:postgresql:42.7.5")
@@ -85,7 +83,6 @@ sentry {
 	// This enables source context, allowing you to see your source
 	// code as part of your stack traces in Sentry.
 	includeSourceContext = true
-
 	org = "alexander-m3"
 	projectName = "java-spring-boot99"
 	authToken = System.getenv("SENTRY_AUTH_TOKEN")

@@ -3,7 +3,6 @@ package hexlet.code.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.AppApplication;
 import hexlet.code.model.Label;
-import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
@@ -20,14 +19,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
 import java.nio.charset.StandardCharsets;
-
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -72,7 +72,7 @@ class LabelControllerTests {
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .apply(springSecurity())
                 .build();
-           testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
+        testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
     }
 
     @Test
@@ -121,7 +121,6 @@ class LabelControllerTests {
         var newLabelData = Instancio.of(modelGenerator.getLabelModel()).create();
         var request = put("/api/labels/" + id)
                 .with(jwt())
-                //.with(jwt().jwt(jwt -> jwt.claim("name", testLabel.getName()).subject(testLabel.getName())))  // an error here to fix
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(newLabelData));
 
@@ -157,6 +156,4 @@ class LabelControllerTests {
 
         assertThat(labelRepository.findById(id)).isNotEmpty();
     }
-
-
 }

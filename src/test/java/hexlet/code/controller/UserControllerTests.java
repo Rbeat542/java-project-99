@@ -9,19 +9,19 @@ import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.instancio.Instancio;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
@@ -147,9 +147,8 @@ class UserControllerTests {
         var newUserData = Instancio.of(modelGenerator.getUserModel()).create();
         var id = testUser.getId();
         var request = put("/api/users/" + id)
-                //.with(jwt());  // doesn't work
-                .with(jwt().jwt(jwt -> jwt.claim("email", testUser.getEmail()).subject(testUser.getEmail()))) // no short form
-                //.with(jwt(testTask.getName()))
+                .with(jwt().jwt(jwt -> jwt.claim("email", testUser.getEmail())
+                        .subject(testUser.getEmail())))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(newUserData));
 
@@ -168,8 +167,8 @@ class UserControllerTests {
         var id = testUser.getId();
 
         var request = delete("/api/users/" + id)
-                //.with(jwt());  // doesn't work
-                .with(jwt().jwt(jwt -> jwt.claim("email", testUser.getEmail()).subject(testUser.getEmail()))); // no short form
+                .with(jwt().jwt(jwt -> jwt.claim("email", testUser.getEmail())
+                        .subject(testUser.getEmail())));
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
@@ -184,7 +183,6 @@ class UserControllerTests {
         var admin = userRepository.findByEmail("hexlet@example.com").get();
         var id = admin.getId();
         var request = delete("/api/users/" + id)
-                //.with(jwt());
                 .with(jwt().jwt(jwt -> jwt.claim("email", testUser.getEmail()).subject(testUser.getEmail())));
         mockMvc.perform(request)
                 .andExpect(status().is(403));
@@ -203,5 +201,4 @@ class UserControllerTests {
 
         assertThat(userRepository.findById(id)).isNotEmpty();
     }
-
 }

@@ -18,16 +18,16 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class UserInitializer implements ApplicationRunner {
+public final class UserInitializer implements ApplicationRunner {
 
     @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    private final TaskStatusRepository taskStatusRepository;
+    private TaskStatusRepository taskStatusRepository;
 
     @Autowired
-    private final CustomUserDetailsService userService;
+    private CustomUserDetailsService userService;
 
     @Autowired
     private LabelRepository labelRepository;
@@ -50,7 +50,7 @@ public class UserInitializer implements ApplicationRunner {
         for (var element : defaultSlugsList) {
             var taskStatus = new TaskStatus();
             taskStatus.setSlug(element);
-            taskStatus.setName(element.toUpperCase().replace("_"," "));
+            taskStatus.setName(element.toUpperCase().replace("_", " "));
             taskStatusRepository.save(taskStatus);
         }
     }
@@ -60,7 +60,7 @@ public class UserInitializer implements ApplicationRunner {
 
         for (var element : defaultLabelsList) {
             var label = new Label();
-            label.setName(element.toUpperCase().replace("_"," "));
+            label.setName(element.toUpperCase().replace("_", " "));
             labelRepository.save(label);
         }
     }

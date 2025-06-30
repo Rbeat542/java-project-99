@@ -1,7 +1,7 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/Rbeat542/java-project-99/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Rbeat542/java-project-99/actions)
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=Rbeat542_java-project-99)](https://sonarcloud.io/summary/new_code?id=Rbeat542_java-project-99)
-
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Rbeat542_java-project-99&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Rbeat542_java-project-99)
 Deploy: 
 
 ## Проект. Анализатор сайтов.
@@ -22,10 +22,3 @@ $ make run
 http://localhost:8080  
 ```
 
-### Работа с программой
-1
-2
-3
-4
-5
-6

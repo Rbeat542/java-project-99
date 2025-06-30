@@ -1,45 +1,38 @@
 package hexlet.code.model;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
-import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import jakarta.validation.constraints.NotNull;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
-@ToString(includeFieldNames = true, onlyExplicitlyIncluded = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "task_statuses")
 public class TaskStatus implements BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    //@ToString.Include
-    //@EqualsAndHashCode.Include
-    private Long id;
+    private long id;
 
-    @NotNull()
-    @Size(min = 1)
-    //@ToString.Include
+    @Column(unique = true, nullable = false)
     private String name;
 
-    @NotNull
-    @Size(min = 1)
-    //@OneToOne(mappedBy = "task")
+    @Column(unique = true, nullable = false)
     private String slug;
 
     @CreatedDate
-    private LocalDateTime createdAt;
-
-
+    @JsonFormat(pattern = "[yyyy, mm, dd]", timezone = "UTC")
+    private LocalDate createdAt;
 }

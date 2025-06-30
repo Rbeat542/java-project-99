@@ -1,8 +1,8 @@
-package hexlet.code.dto;
+package hexlet.code.dto.label;
 
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Setter
 @Getter
@@ -11,5 +11,5 @@ public class LabelDTO {
 
     private String name;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 }

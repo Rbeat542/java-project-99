@@ -1,4 +1,4 @@
-package hexlet.code.dto;
+package hexlet.code.dto.label;
 
 
 import jakarta.validation.constraints.NotNull;
@@ -11,5 +11,4 @@ public class LabelCreateDTO {
 
     @NotNull
     private String name;
-
 }

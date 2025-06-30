@@ -1,4 +1,4 @@
-package hexlet.code.dto;
+package hexlet.code.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,8 +10,6 @@ import org.openapitools.jackson.nullable.JsonNullable;
 @Setter
 @Getter
 
-//@Entity
-//@EntityListeners(AuditingEntityListener.class)
 public class UserUpdateDTO  {
 
     @NotBlank
@@ -27,10 +25,4 @@ public class UserUpdateDTO  {
     @NotBlank
     private JsonNullable<String> password;
 
-/*
-    public UserUpdateDTO(JsonNullable<String> email, JsonNullable<String> password) {
-        this.email = email;
-        this.password = password;
-    }
-*/
 }

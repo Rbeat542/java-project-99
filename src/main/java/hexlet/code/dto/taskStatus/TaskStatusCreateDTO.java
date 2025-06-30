@@ -1,4 +1,4 @@
-package hexlet.code.dto;
+package hexlet.code.dto.taskStatus;
 
 
 import jakarta.validation.constraints.NotNull;
@@ -17,5 +17,4 @@ public class TaskStatusCreateDTO {
     @NotNull
     @Size(min = 1)
     private String name;
-
 }

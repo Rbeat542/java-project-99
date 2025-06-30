@@ -1,19 +1,20 @@
 package hexlet.code.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
-
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -21,7 +22,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Setter
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "labels")
-public class Label {
+public class Label implements BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -29,11 +30,11 @@ public class Label {
 
     @NotBlank
     @Column(unique = true, nullable = false)
-    @Size(min=3, max = 1000)
+    @Size(min = 3, max = 1000)
     private String name;
 
     @CreatedDate
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @ManyToMany(mappedBy = "labels")
     private List<Task> tasks;

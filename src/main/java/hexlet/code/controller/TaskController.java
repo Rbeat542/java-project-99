@@ -1,16 +1,25 @@
 package hexlet.code.controller;
 
-import hexlet.code.dto.TaskCreateDTO;
-import hexlet.code.dto.TaskDTO;
-import hexlet.code.dto.TaskUpdateDTO;
-import hexlet.code.dto.TaskParamsDTO;
+import hexlet.code.dto.task.TaskCreateDTO;
+import hexlet.code.dto.task.TaskDTO;
+import hexlet.code.dto.task.TaskUpdateDTO;
+import hexlet.code.dto.task.TaskParamsDTO;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 import java.util.List;
 
@@ -24,23 +33,11 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-/*    @GetMapping("/tasks")  // SIMPLY GET ALL !!!
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<TaskDTO>> index() {
-        var tasks = taskService.getAll();
-
-        return ResponseEntity.ok()
-                .header("X-Total-Count", String.valueOf(tasks.size()))
-                .body(tasks);
-    }*/
-
     @GetMapping("/tasks")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<TaskDTO>> index(@Valid TaskParamsDTO params) {
         List<TaskDTO>  tasks = taskService.getAllWithParams(params);
 
-        //List<TaskDTO> tasks = taskService.getTasks(filter);
-        //return ResponseEntity.ok(tasks);
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(tasks.size()))
                 .body(tasks);
@@ -53,9 +50,6 @@ public class TaskController {
 
         return ResponseEntity.status(201)
                 .body(user);
-
-
-
     }
 
     @GetMapping("/tasks/{id}")
@@ -68,7 +62,6 @@ public class TaskController {
     }
     @PutMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.OK)
-    //@PreAuthorize("@userUtils.isAuthor(#id)")
     public ResponseEntity<TaskDTO> patch(@PathVariable Long id, @RequestBody TaskUpdateDTO dto) throws Exception {
         var user = taskService.update(id, dto);
 
@@ -76,10 +69,8 @@ public class TaskController {
                 .body(user);
     }
 
-
     @DeleteMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    //@PreAuthorize("@userUtils.isAuthor(#id)")
     public void delete(@PathVariable Long id) {
         taskService.deleteById(id);
     }

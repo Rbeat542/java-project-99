@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class AccessChecker {
+public final class AccessChecker {
 
     private final UserRepository userRepository;
 
@@ -32,7 +32,4 @@ public class AccessChecker {
                 email, targetEmail, result);
         return result;
     }
-
-
-
 }

@@ -1,19 +1,16 @@
 package hexlet.code.controller;
 
-import hexlet.code.dto.UserCreateDTO;
-import hexlet.code.dto.UserDTO;
-import hexlet.code.model.User;
+import hexlet.code.dto.user.UserCreateDTO;
+import hexlet.code.dto.user.UserDTO;
 import hexlet.code.service.AccessChecker;
 import hexlet.code.util.UserUtils;
-import hexlet.code.dto.UserUpdateDTO;
+import hexlet.code.dto.user.UserUpdateDTO;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,9 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
-
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -69,7 +64,6 @@ public class UserController {
 
     @PutMapping(path = "/{id}")
     @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
-    //@PreAuthorize("@accessChecker.canDoWithUser(#id, authentication)")  // с вынесением проверки в отдельный класс
     public ResponseEntity<UserDTO> patch(@PathVariable Long id, @RequestBody UserUpdateDTO dto) {
         var user = userService.updateUser(id, dto);
 
@@ -78,13 +72,8 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    //@PreAuthorize("@accessChecker.canDeleteUser(#id, authentication)")  // с вынесением проверки в отдельный класс
     @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
-    public void delete(@PathVariable Long id) {    // here was a 403 status in test , but should 200
+    public void delete(@PathVariable Long id) {
         userService.deleteUser(id);
     }
-
-
-
 }
-

@@ -1,10 +1,9 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.dto.TaskCreateDTO;
-import hexlet.code.dto.TaskUpdateDTO;
+import hexlet.code.dto.task.TaskCreateDTO;
+import hexlet.code.dto.task.TaskUpdateDTO;
 import hexlet.code.model.Task;
-import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
@@ -22,14 +21,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
 import java.nio.charset.StandardCharsets;
-
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -103,13 +103,13 @@ class TaskControllerTests {
 
     @Test
     public void testCreateTask() throws Exception {
-        var taskUpdateData = Instancio.of(modelGenerator.getTaskModel()).create();
-        var status = taskUpdateData.getTaskStatus();
-        var name = taskUpdateData.getName();
+        var newTask = Instancio.of(modelGenerator.getTaskModel()).create();
+        var newStatus = newTask.getTaskStatus();
+        var newName = newTask.getName();
 
         var updateData = new TaskCreateDTO();
-        updateData.setStatus(status.getSlug());
-        updateData.setTitle(name);
+        updateData.setStatus(newStatus.getSlug());
+        updateData.setTitle(newName);
 
         var request = post("/api/tasks").with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -121,8 +121,8 @@ class TaskControllerTests {
         //var task = taskRepository.findByName(updateData.getTitle()).get();
         var task = taskRepository.findFirstByNameOrderByCreatedAtDesc(updateData.getTitle()).get();
         assertThat(task).isNotNull();
-        assertThat(task.getName()).isEqualTo(taskUpdateData.getName());
-        assertThat(task.getTaskStatus()).isEqualTo(taskUpdateData.getTaskStatus());
+        assertThat(task.getName()).isEqualTo(newName);
+        assertThat(task.getTaskStatus().getId()).isEqualTo(newStatus.getId());
     }
 
     @Test
@@ -138,7 +138,6 @@ class TaskControllerTests {
 
         var request = put("/api/tasks/" + id)
                 .with(jwt())
-                //.with(jwt().jwt(jwt -> jwt.claim("name", testTask.getName()).subject(testTask.getName())))  // an error here to fix
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(updateData));
 

@@ -1,27 +1,23 @@
 package hexlet.code.util;
 
-//import exercise.model.Article;
 import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.instancio.Model;
 import org.instancio.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.util.Set;
-
 import static org.instancio.Select.field;
 
-//@Getter
 @Component
 public class ModelGenerator {
     private Model<TaskStatus> taskStatusModel;
@@ -29,7 +25,6 @@ public class ModelGenerator {
     private Model<Task> taskModel;
     private Model<Label> labelModel;
     private Set<Label> labelSet;
-
     private Label label;
     private TaskStatus taskStatus;
     private User user;
@@ -45,9 +40,14 @@ public class ModelGenerator {
 
     @Autowired
     private TaskStatusRepository taskStatusRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
     @PostConstruct
     public void init() {
+        taskRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        labelRepository.deleteAll();
         userModel = Instancio.of(User.class)
                 .ignore(field(User::getId))
                 .supply(field(User::getFirstName), () -> faker.name().firstName())
@@ -72,7 +72,7 @@ public class ModelGenerator {
 
         labelModel = Instancio.of(Label.class)
                 .ignore(field(Label::getId))
-                .supply(field(Label::getName), () -> faker.lorem().characters(3,20))
+                .supply(field(Label::getName), () -> faker.lorem().characters(3, 20))
                 .toModel();
 
         label = Instancio.of(labelModel).create();
@@ -81,7 +81,7 @@ public class ModelGenerator {
 
         taskModel = Instancio.of(Task.class)
                 .ignore(field(Task::getId))
-                .supply(field(Task::getIndex), () -> Long.parseLong(faker.number().digits(4)))
+                .supply(field(Task::getIndex), () -> Integer.parseInt(faker.number().digits(4)))
                 .supply(field(Task::getName), () -> faker.lorem().word())
                 .supply(field(Task::getDescription), () -> faker.lorem().sentence())
                 .supply(Select.field(Task::getTaskStatus), () -> taskStatus)

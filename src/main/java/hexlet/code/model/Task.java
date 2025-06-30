@@ -1,14 +1,23 @@
 package hexlet.code.model;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -17,7 +26,6 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
-@ToString(includeFieldNames = true, onlyExplicitlyIncluded = true)
 @Table(name = "tasks")
 public class Task implements BaseEntity {
 
@@ -25,9 +33,10 @@ public class Task implements BaseEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    private Long index;
+    private Integer index;
 
     @NotBlank
+    @Size(min = 1)
     private String name;
 
     private String description;
@@ -41,7 +50,7 @@ public class Task implements BaseEntity {
     private User assignee;
 
     @CreatedDate
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @ManyToMany
     @JoinTable(
@@ -49,5 +58,7 @@ public class Task implements BaseEntity {
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "label_id")
     )
+
+    @JsonProperty("taskLabelsIds")
     private Set<Label> labels; //= new HashSet<>();
 }

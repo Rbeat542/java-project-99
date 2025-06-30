@@ -1,6 +1,5 @@
 package hexlet.code.config;
 
-import jakarta.servlet.http.HttpServletResponse;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
