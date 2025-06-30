@@ -9,6 +9,7 @@ import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
+import hexlet.code.util.TestKeyGenerator;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class TaskControllerTests {
+class TaskControllerTests extends TestKeyGenerator {
 
     @Autowired
     LabelRepository labelRepository;
@@ -147,7 +148,6 @@ class TaskControllerTests {
         var task = taskRepository.findById(id).get();
         assertThat(task.getName()).isEqualTo(taskUpdateData.getName());
         assertThat(task.getDescription()).isEqualTo(taskUpdateData.getDescription());
-        //add body check for all
     }
 
     @Test
@@ -176,5 +176,28 @@ class TaskControllerTests {
         assertThat(taskRepository.findById(id)).isNotEmpty();
     }
 
-        //  TEST TO ADD:  /GET with PARAMETERS
+    @Test
+    public void testGetTasksWithParams() throws Exception {
+        var newTask = Instancio.of(modelGenerator.getTaskModel()).create();
+        var newStatus = newTask.getTaskStatus();
+        var newName = newTask.getName();
+
+        var updateData = new TaskCreateDTO();
+        updateData.setStatus(newStatus.getSlug());
+        updateData.setTitle(newName);
+
+        var request = post("/api/tasks").with(jwt())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(updateData));
+
+        mockMvc.perform(request)
+                .andExpect(status().isCreated());
+
+        //var task = taskRepository.findByName(updateData.getTitle()).get();
+        var task = taskRepository.findFirstByNameOrderByCreatedAtDesc(updateData.getTitle()).get();
+        assertThat(task).isNotNull();
+        assertThat(task.getName()).isEqualTo(newName);
+        assertThat(task.getTaskStatus().getId()).isEqualTo(newStatus.getId());
+    }
+
 }

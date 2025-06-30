@@ -7,6 +7,7 @@ import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
+import hexlet.code.util.TestKeyGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -34,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserControllerTests {
+class UserControllerTests extends TestKeyGenerator {
 
     @Autowired
     LabelRepository labelRepository;

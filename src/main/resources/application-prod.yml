@@ -3,3 +3,6 @@ spring:
   datasource:
     url: ${JDBC_DATABASE_URL}
 
+rsa:
+  public-key-location: file:/etc/app-keys/public.pem
+  private-key-location: file:/etc/app-keys/private.pem
