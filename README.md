@@ -3,7 +3,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Rbeat542_java-project-99&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Rbeat542_java-project-99)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Rbeat542_java-project-99&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Rbeat542_java-project-99)
 
-Deploy: https://java-project-99-8t0b.onrender.com
+Адрес: https://java-project-99-8t0b.onrender.com
 
 ## Проект. Анализатор сайтов.
 
@@ -24,4 +24,5 @@ $ cd java-projet-99
 $ make run  
 http://localhost:8080  
 ```
-
+логин: hexlet@example.com
+пароль: qwerty
