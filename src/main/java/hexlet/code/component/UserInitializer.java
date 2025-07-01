@@ -34,14 +34,16 @@ public final class UserInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        var email = "hexlet@example.com";
-        var userData = new User();
-        userData.setEmail(email);
-        userData.setPasswordDigest("qwerty");
-        userService.createUser(userData);
+        if (!userRepository.existsByEmail("hexlet@example.com")) {
+            var email = "hexlet@example.com";
+            var userData = new User();
+            userData.setEmail(email);
+            userData.setPasswordDigest("qwerty");
+            userService.createUser(userData);
 
-        generateDefaultTaskStatuses();
-        generateDefaultLabels();
+            generateDefaultTaskStatuses();
+            generateDefaultLabels();
+        }
     }
 
     public void generateDefaultTaskStatuses() {

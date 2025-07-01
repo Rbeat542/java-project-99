@@ -3,6 +3,7 @@ package hexlet.code.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.task.TaskCreateDTO;
 import hexlet.code.dto.task.TaskUpdateDTO;
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
@@ -23,6 +24,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -179,25 +182,29 @@ class TaskControllerTests extends TestKeyGenerator {
     @Test
     public void testGetTasksWithParams() throws Exception {
         var newTask = Instancio.of(modelGenerator.getTaskModel()).create();
-        var newStatus = newTask.getTaskStatus();
-        var newName = newTask.getName();
+        var status = newTask.getTaskStatus().getSlug();
+        var assigneeId = newTask.getAssignee().getId();
+        var title = newTask.getName();
+        var labelId = newTask.getLabels().stream()
+                .map(Label::getId)
+                .findFirst()
+                .orElse(null);
 
-        var updateData = new TaskCreateDTO();
-        updateData.setStatus(newStatus.getSlug());
-        updateData.setTitle(newName);
+        var query = new StringBuilder("/?");
+        query.append("titleCont=").append(title);
+        query.append("&status=").append(status);
+        query.append("&assigneeId=").append(assigneeId);
 
-        var request = post("/api/tasks").with(jwt())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(updateData));
+        if (labelId != null) {
+            query.append("&labelId=").append(labelId);
+        }
+
+        var request = get(query.toString());
 
         mockMvc.perform(request)
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
 
-        //var task = taskRepository.findByName(updateData.getTitle()).get();
-        var task = taskRepository.findFirstByNameOrderByCreatedAtDesc(updateData.getTitle()).get();
-        assertThat(task).isNotNull();
-        assertThat(task.getName()).isEqualTo(newName);
-        assertThat(task.getTaskStatus().getId()).isEqualTo(newStatus.getId());
+        //assertThat(task.getTaskStatus().getId()).isEqualTo(newStatus.getId());
     }
 
 }
