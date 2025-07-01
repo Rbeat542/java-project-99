@@ -188,7 +188,7 @@ class TaskControllerTests extends TestKeyGenerator {
                 .findFirst()
                 .orElse(null);
 
-        var query = new StringBuilder("/?");
+        var query = new StringBuilder("?");
         query.append("titleCont=").append(title);
         query.append("&status=").append(status);
         query.append("&assigneeId=").append(assigneeId);
@@ -197,7 +197,7 @@ class TaskControllerTests extends TestKeyGenerator {
             query.append("&labelId=").append(labelId);
         }
 
-        var request = get(query.toString());
+        var request = get("/api/tasks" + query.toString()).with(jwt());
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
