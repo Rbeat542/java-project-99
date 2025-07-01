@@ -17,7 +17,7 @@ public class TestKeyGenerator {
         File publicKey = new File(certsDir, "public.pem");
 
         if (privateKey.exists() && publicKey.exists()) {
-            return; // Уже сгенерированы
+            return;
         }
 
         ProcessBuilder genPrivate = new ProcessBuilder(
@@ -26,7 +26,9 @@ public class TestKeyGenerator {
                 "-algorithm", "RSA",
                 "-pkeyopt", "rsa_keygen_bits:2048"
         );
-        if (genPrivate.start().waitFor() != 0) throw new RuntimeException("Ошибка генерации private.pem");
+        if (genPrivate.start().waitFor() != 0) {
+            throw new RuntimeException("Ошибка генерации private.pem");
+        }
 
         ProcessBuilder genPublic = new ProcessBuilder(
                 "openssl", "rsa",
@@ -34,6 +36,8 @@ public class TestKeyGenerator {
                 "-pubout",
                 "-out", publicKey.getAbsolutePath()
         );
-        if (genPublic.start().waitFor() != 0) throw new RuntimeException("Ошибка генерации public.pem");
+        if (genPublic.start().waitFor() != 0) {
+            throw new RuntimeException("Ошибка генерации public.pem");
+        }
     }
 }

@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 src/main/resources/certs
+src/test/resources/certs
 
 ### STS ###
 .apt_generated
