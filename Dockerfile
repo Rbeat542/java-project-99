@@ -20,4 +20,4 @@ RUN ./gradlew --no-daemon build
 
 EXPOSE 8080
 
-CMD SENTRY_AUTO_INIT=false java -jar build/libs/app-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod --log-level=INFO
+CMD https://0bac6e4ada7d025b87bfa79eb1070d6e@o4509576923906048.ingest.de.sentry.io/4509583732703312 java -jar build/libs/app-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod --log-level=INFO

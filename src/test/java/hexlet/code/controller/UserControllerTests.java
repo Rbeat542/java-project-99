@@ -172,7 +172,7 @@ class UserControllerTests extends TestKeyGenerator {
                         .subject(testUser.getEmail())));
 
         mockMvc.perform(request)
-                .andExpect(status().isOk());
+                .andExpect(status().is(204));
 
         assertThat(userRepository.findById(id)).isEmpty();
     }
