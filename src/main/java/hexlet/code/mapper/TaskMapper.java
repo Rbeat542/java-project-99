@@ -50,7 +50,7 @@ public abstract class TaskMapper {
     @Mapping(target = "title", source = "name")
     @Mapping(target = "content", source = "description")
     @Mapping(target = "assigneeId", source = "assignee.id")
-    @Mapping(target = "status", source = "taskStatus")
+    @Mapping(target = "status", source = "taskStatus.slug")
     @Mapping(target = "taskLabelIds", source = "labels", qualifiedByName = "mapLabelsToDTO")
     public abstract TaskDTO map(Task model);
 
@@ -98,5 +98,4 @@ public abstract class TaskMapper {
                 .map(label -> label.getId())
                 .collect(Collectors.toSet());
     }
-
 }

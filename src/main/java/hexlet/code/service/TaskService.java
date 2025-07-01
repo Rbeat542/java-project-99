@@ -38,7 +38,7 @@ public final class TaskService {
             return repository.findAll().stream().map(taskMapper::map).toList();
         }
 
-        var spec = specification.build(params); //here is a problem
+        var spec = specification.build(params);
         var tasks = repository.findAll(spec);
         var result = tasks.stream().map(taskMapper::map);
 

@@ -1,7 +1,6 @@
 package hexlet.code.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
@@ -11,14 +10,16 @@ public final class UserUtils {
     @Autowired
     private UserRepository userRepository;
 
-    public User getCurrentUser() {
+/*    public Optional<User> getCurrentUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
+            return Optional.empty();
         }
+
         var email = authentication.getName();
-        return userRepository.findByEmail(email).get();
-    }
+        return userRepository.findByEmail(email);
+    }*/
 
     public User getTestUser() {
         return  userRepository.findByEmail("hexlet@example.com")
