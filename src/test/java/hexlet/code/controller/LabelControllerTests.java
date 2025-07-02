@@ -85,6 +85,7 @@ class LabelControllerTests extends TestKeyGenerator {
 
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
+        assertThat(body).contains(testLabel.getName());
     }
 
     @Test

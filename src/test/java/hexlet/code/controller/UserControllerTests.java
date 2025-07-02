@@ -89,6 +89,8 @@ class UserControllerTests extends TestKeyGenerator {
 
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
+        assertThat(body).contains(testUser.getFirstName());
+        assertThat(body).contains(testUser.getLastName());
     }
 
     @Test
@@ -100,16 +102,10 @@ class UserControllerTests extends TestKeyGenerator {
         var result = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
-        //var body = result.getResponse().getContentAsString();
 
         var user = userRepository.findById(id).get();
         assertThat(user.getEmail()).isEqualTo(testUser.getEmail());
         assertThat(user.getPassword()).isEqualTo(testUser.getPassword());
-
-        /*assertThatJson(body).and(
-                        v -> v.node("firstName").isEqualTo(testUser.getFirstName()),
-                        v -> v.node("email").isEqualTo(testUser.getEmail()));*/
-
     }
 
     @Test

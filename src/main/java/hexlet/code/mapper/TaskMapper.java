@@ -20,6 +20,7 @@ import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,10 +84,11 @@ public abstract class TaskMapper {
         if (labelIds == null) {
             return Collections.emptySet();
         }
-        return labelIds.stream()
-                .map(id -> labelRepository.findById(id)
-                        .orElseThrow(() -> new IllegalArgumentException("Label not found: " + id)))
-                .collect(Collectors.toSet());
+        var labelsList = labelRepository.findAllById(labelIds); //bc of DB perfomance
+        if (labelsList.size() != labelIds.size()) {
+            throw new IllegalArgumentException("Some labels not found: ");
+        }
+        return new HashSet<>(labelsList);
     }
 
     @Named("mapLabelsToDTO")

@@ -8,6 +8,7 @@ import hexlet.code.dto.user.UserUpdateDTO;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +28,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@AllArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
     private UserUtils userUtils;
@@ -59,6 +58,7 @@ public class UserController {
     }
 
     @PostMapping(path = "")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<UserDTO> create(@Valid @RequestBody UserCreateDTO userData) {
         var user =  userService.createUser(userData);
 

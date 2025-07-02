@@ -9,6 +9,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,10 +23,12 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Setter
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "labels")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Label implements BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NotBlank
@@ -37,5 +40,6 @@ public class Label implements BaseEntity {
     private LocalDate createdAt;
 
     @ManyToMany(mappedBy = "labels")
+
     private List<Task> tasks;
 }

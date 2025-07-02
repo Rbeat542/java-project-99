@@ -86,6 +86,8 @@ class TaskControllerTests extends TestKeyGenerator {
 
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
+        assertThat(body).contains(testTask.getName());
+        assertThat(body).contains(testTask.getDescription());
     }
 
     @Test
@@ -120,7 +122,6 @@ class TaskControllerTests extends TestKeyGenerator {
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
-        //var task = taskRepository.findByName(updateData.getTitle()).get();
         var task = taskRepository.findFirstByNameOrderByCreatedAtDesc(updateData.getTitle()).get();
         assertThat(task).isNotNull();
         assertThat(task.getName()).isEqualTo(newName);

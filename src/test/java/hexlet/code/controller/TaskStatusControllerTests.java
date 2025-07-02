@@ -70,6 +70,8 @@ class TaskStatusControllerTests extends TestKeyGenerator {
 
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
+        assertThat(body).contains(testStatus.getName());
+        assertThat(body).contains(testStatus.getSlug());
     }
 
     @Test

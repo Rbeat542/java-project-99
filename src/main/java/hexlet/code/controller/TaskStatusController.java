@@ -44,7 +44,6 @@ public class TaskStatusController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<TaskStatusDTO> create(@Valid @RequestBody TaskStatusCreateDTO userData) {
         var dto =  taskStatusService.create(userData);
-
         return ResponseEntity.status(201)
                 .body(dto);
     }

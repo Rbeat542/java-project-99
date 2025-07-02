@@ -59,16 +59,16 @@ public final class TaskService {
         return taskDTO;
     }
 
-    public TaskDTO findById(Long id) throws Exception { //remove throws
+    public TaskDTO findById(Long id) throws Exception {
         var task = repository.findById(id)
-                .orElseThrow(() -> new Exception("")); // ResourceNotFoundException("Not Found: " + id));
+                .orElseThrow(() -> new Exception("Task with " + id + "not found"));
         var taskDTO = taskMapper.map(task);
         return taskDTO;
     }
 
-    public TaskDTO update(Long id, TaskUpdateDTO taskData) throws Exception { //remove throws
+    public TaskDTO update(Long id, TaskUpdateDTO taskData) throws Exception {
         var task = repository.findById(id)
-                .orElseThrow(() -> new Exception("")); //ResourceNotFoundException("Not Found"));
+                .orElseThrow(() -> new Exception("Task with " + id + "not found"));
         taskMapper.update(taskData, task);
         repository.save(task);
         var taskDTO = taskMapper.map(task);
