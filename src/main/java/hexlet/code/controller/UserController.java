@@ -2,14 +2,11 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.user.UserCreateDTO;
 import hexlet.code.dto.user.UserDTO;
-import hexlet.code.service.AccessChecker;
-import hexlet.code.util.UserUtils;
 import hexlet.code.dto.user.UserUpdateDTO;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,8 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-
 import java.util.List;
 
 @RestController
@@ -32,13 +27,10 @@ import java.util.List;
 public class UserController {
 
     private final UserRepository userRepository;
+
     private final UserService userService;
 
-    @Autowired
-    private UserUtils userUtils;
-
-    @Autowired
-    private AccessChecker accessChecker;
+    //private final UserUtils userUtils;
 
     @GetMapping("")
     public ResponseEntity<List<UserDTO>> index() {
@@ -50,29 +42,21 @@ public class UserController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<UserDTO> show(@PathVariable Long id) {
-        var user =  userService.findByID(id);
-
-        return ResponseEntity.ok()
-                .body(user);
+    @ResponseStatus(HttpStatus.OK)
+    public UserDTO show(@PathVariable Long id) {
+        return userService.findByID(id);
     }
 
     @PostMapping(path = "")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDTO> create(@Valid @RequestBody UserCreateDTO userData) {
-        var user =  userService.createUser(userData);
-
-        return ResponseEntity.status(201)
-                .body(user);
+    public UserDTO create(@Valid @RequestBody UserCreateDTO userData) {
+        return userService.createUser(userData);
     }
 
     @PutMapping(path = "/{id}")
     @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
-    public ResponseEntity<UserDTO> patch(@PathVariable Long id, @RequestBody UserUpdateDTO dto) {
-        var user = userService.updateUser(id, dto);
-
-        return ResponseEntity.ok()
-                .body(user);
+    public UserDTO patch(@PathVariable Long id, @RequestBody UserUpdateDTO dto) {
+        return userService.updateUser(id, dto);
     }
 
     @DeleteMapping(path = "/{id}")

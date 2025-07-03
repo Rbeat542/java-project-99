@@ -4,19 +4,18 @@ import java.util.List;
 import hexlet.code.dto.taskStatus.TaskStatusDTO;
 import hexlet.code.dto.taskStatus.TaskStatusUpdateDTO;
 import hexlet.code.repository.TaskStatusRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import hexlet.code.dto.taskStatus.TaskStatusCreateDTO;
 import hexlet.code.mapper.TaskStatusMapper;
 
 @Service
-public final class TaskStatusService {
-    @Autowired
-    private TaskStatusRepository repository;
+@AllArgsConstructor
+public class TaskStatusService {
 
-    @Autowired
-    private TaskStatusMapper taskStatusMapper;
+    private final TaskStatusRepository repository;
+
+    private final TaskStatusMapper taskStatusMapper;
 
     public List<TaskStatusDTO> getAll() {
         var tasks = repository.findAll();

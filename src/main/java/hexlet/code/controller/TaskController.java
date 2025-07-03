@@ -7,7 +7,7 @@ import hexlet.code.dto.task.TaskParamsDTO;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.service.TaskService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,48 +25,42 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class TaskController {
 
-    @Autowired
-    private TaskRepository repository;
+    private final TaskRepository repository;
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
     @GetMapping("/tasks")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<TaskDTO>> index(@Valid TaskParamsDTO params) {
-        List<TaskDTO>  tasks = taskService.getAllWithParams(params);
+        List<TaskDTO> tasks = taskService.getAllWithParams(params);
 
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(tasks.size()))
                 .body(tasks);
     }
 
+
+
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<TaskDTO> create(@Valid @RequestBody TaskCreateDTO userData) {
-        var user =  taskService.create(userData);
-
-        return ResponseEntity.status(201)
-                .body(user);
+    public TaskDTO create(@Valid @RequestBody TaskCreateDTO userData) {
+        return taskService.create(userData);
     }
 
     @GetMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<TaskDTO> show(@PathVariable Long id) throws Exception { //remove throws
-        var task =  taskService.findById(id);
-
-        return ResponseEntity.ok()
-                .body(task);
+    public TaskDTO show(@PathVariable Long id) throws Exception {
+        return taskService.findById(id);
     }
+
     @PutMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<TaskDTO> patch(@PathVariable Long id, @RequestBody TaskUpdateDTO dto) throws Exception {
-        var user = taskService.update(id, dto);
+    public TaskDTO patch(@PathVariable Long id, @RequestBody TaskUpdateDTO dto) throws Exception {
+        return taskService.update(id, dto);
 
-        return ResponseEntity.ok()
-                .body(user);
     }
 
     @DeleteMapping("/tasks/{id}")

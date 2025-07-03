@@ -5,7 +5,7 @@ import hexlet.code.dto.taskStatus.TaskStatusDTO;
 import hexlet.code.dto.taskStatus.TaskStatusCreateDTO;
 import hexlet.code.dto.taskStatus.TaskStatusUpdateDTO;
 import hexlet.code.repository.TaskStatusRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,13 +22,12 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class TaskStatusController {
 
-    @Autowired
-    private TaskStatusRepository repository;
+    private final TaskStatusRepository repository;
 
-    @Autowired
-    private TaskStatusService taskStatusService;
+    private final TaskStatusService taskStatusService;
 
     @GetMapping("/task_statuses")
     @ResponseStatus(HttpStatus.OK)
@@ -42,29 +41,21 @@ public class TaskStatusController {
 
     @PostMapping("/task_statuses")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<TaskStatusDTO> create(@Valid @RequestBody TaskStatusCreateDTO userData) {
-        var dto =  taskStatusService.create(userData);
-        return ResponseEntity.status(201)
-                .body(dto);
+    public TaskStatusDTO create(@Valid @RequestBody TaskStatusCreateDTO userData) {
+        return taskStatusService.create(userData);
     }
 
     @GetMapping("/task_statuses/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<TaskStatusDTO> show(@PathVariable Long id) throws Exception { //remove throws
-        var dto =  taskStatusService.findById(id);
-
-        return ResponseEntity.ok()
-                .body(dto);
+    public TaskStatusDTO show(@PathVariable Long id) throws Exception {
+        return taskStatusService.findById(id);
     }
 
     @PutMapping("/task_statuses/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<TaskStatusDTO> patch(@PathVariable Long id, @RequestBody TaskStatusUpdateDTO dto)
+    public TaskStatusDTO patch(@PathVariable Long id, @RequestBody TaskStatusUpdateDTO dto)
             throws Exception {
-        var taskStatusDTO = taskStatusService.update(id, dto);
-
-        return ResponseEntity.ok()
-                .body(taskStatusDTO);
+        return taskStatusService.update(id, dto);
     }
 
     @DeleteMapping("/task_statuses/{id}")

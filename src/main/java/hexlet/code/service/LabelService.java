@@ -5,17 +5,17 @@ import hexlet.code.dto.label.LabelDTO;
 import hexlet.code.dto.label.LabelUpdateDTO;
 import hexlet.code.mapper.LabelMapper;
 import hexlet.code.repository.LabelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public final class LabelService {
-    @Autowired
-    private LabelRepository repository;
+@AllArgsConstructor
+public class LabelService {
 
-    @Autowired
-    private LabelMapper labelMapper;
+    private final LabelRepository repository;
+
+    private final LabelMapper labelMapper;
 
     public List<LabelDTO> getAll() {
         var labels = repository.findAll();
@@ -32,16 +32,16 @@ public final class LabelService {
         return labelDTO;
     }
 
-    public LabelDTO findById(Long id) throws Exception { //remove throws
+    public LabelDTO findById(Long id) throws Exception {
         var label = repository.findById(id)
-                .orElseThrow(() -> new Exception("")); // ResourceNotFoundException("Not Found: " + id));
+                .orElseThrow(() -> new Exception("Label with id = " + id + " not found"));
         var labelDTO = labelMapper.map(label);
         return labelDTO;
     }
 
-    public LabelDTO update(Long id, LabelUpdateDTO labelData) throws Exception { //remove throws
+    public LabelDTO update(Long id, LabelUpdateDTO labelData) throws Exception {
         var label = repository.findById(id)
-                .orElseThrow(() -> new Exception("")); //ResourceNotFoundException("Not Found"));
+                .orElseThrow(() -> new Exception("Label with id = " + id + " not found"));
         labelMapper.update(labelData, label);
         repository.save(label);
         var labelDTO = labelMapper.map(label);

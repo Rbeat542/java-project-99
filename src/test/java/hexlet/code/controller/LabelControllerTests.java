@@ -66,7 +66,11 @@ class LabelControllerTests extends TestKeyGenerator {
     private Label testLabel;
 
     @BeforeEach
-    public void setUp() {
+    public void init() {
+        taskRepository.deleteAll();
+        labelRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
         modelGenerator.init();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
@@ -74,11 +78,11 @@ class LabelControllerTests extends TestKeyGenerator {
                 .apply(springSecurity())
                 .build();
         testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
+        labelRepository.save(testLabel);
     }
 
     @Test
     public void testIndex() throws Exception {
-        labelRepository.save(testLabel);
         var result = mockMvc.perform(get("/api/labels").with(jwt()))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -90,7 +94,6 @@ class LabelControllerTests extends TestKeyGenerator {
 
     @Test
     public void testShowLabel() throws Exception {
-        labelRepository.save(testLabel);
         var id = testLabel.getId();
         var request = get("/api/labels/" + id).with(jwt());
 
@@ -98,29 +101,32 @@ class LabelControllerTests extends TestKeyGenerator {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        var label = labelRepository.findById(id).get();
-        assertThat(label.getName()).isEqualTo(testLabel.getName());
+        var body = result.getResponse().getContentAsString();
+        assertThatJson(body).and(
+                v -> v.node("name").isEqualTo(testLabel.getName()));
     }
 
     @Test
     public void testCreateLabel() throws Exception {
+        var newData = Instancio.of(modelGenerator.getLabelModel()).create();
+
         var request = post("/api/labels").with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(testLabel));
+                .content(om.writeValueAsString(newData));
 
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
-        var label = labelRepository.findByName(testLabel.getName()).get();
+        var label = labelRepository.findByName(newData.getName()).get();
         assertThat(label).isNotNull();
-        assertThat(label.getName()).isEqualTo(testLabel.getName());
+        assertThat(label.getName()).isEqualTo(newData.getName());
     }
 
     @Test
     public void testUpdateLabel() throws Exception {
-        labelRepository.save(testLabel);
         var id = testLabel.getId();
         var newLabelData = Instancio.of(modelGenerator.getLabelModel()).create();
+
         var request = put("/api/labels/" + id)
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -135,9 +141,7 @@ class LabelControllerTests extends TestKeyGenerator {
 
     @Test
     public void testDeleteLabel() throws Exception {
-        labelRepository.save(testLabel);
         var id = testLabel.getId();
-
         var request = delete("/api/labels/" + id)
                 .with(jwt());
 
@@ -149,7 +153,6 @@ class LabelControllerTests extends TestKeyGenerator {
 
     @Test
     public void testDeleteUnauthorizedLabel() throws Exception {
-        labelRepository.save(testLabel);
         var id = testLabel.getId();
 
         var request = delete("/api/labels/" + id);

@@ -25,7 +25,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 
-public class SecurityConfig { //extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     @Autowired
     private JwtDecoder jwtDecoder;

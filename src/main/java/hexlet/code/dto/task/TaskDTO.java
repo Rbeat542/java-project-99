@@ -1,6 +1,7 @@
 package hexlet.code.dto.task;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Setter
 @Getter
+@EqualsAndHashCode
 public class TaskDTO {
     private Long id;
 
@@ -25,6 +27,6 @@ public class TaskDTO {
 
     private LocalDate createdAt;
 
-    private Set<Long> taskLabelIds = new HashSet<>();   // обязательно присвоить новый массив
+    private Set<Long> taskLabelIds = new HashSet<>();
 
 }

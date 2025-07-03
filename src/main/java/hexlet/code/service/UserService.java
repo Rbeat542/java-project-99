@@ -4,20 +4,18 @@ import hexlet.code.dto.user.UserDTO;
 import hexlet.code.dto.user.UserUpdateDTO;
 import hexlet.code.dto.user.UserCreateDTO;
 import hexlet.code.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import hexlet.code.mapper.UserMapper;
-
 import java.util.List;
 
 @Service
-public final class UserService {
+@AllArgsConstructor
+public class UserService {
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    UserMapper userMapper;
+    private final UserMapper userMapper;
 
     public List<UserDTO> findAll() {
         var listOfUsers = userRepository.findAll();
@@ -29,7 +27,7 @@ public final class UserService {
 
     public UserDTO findByID(Long id) {
         var user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("findbyid method error: Id " + id + " not found"));
+                .orElseThrow(() -> new RuntimeException("User with id = " + id + " not found"));
         return userMapper.map(user);
     }
 
@@ -42,15 +40,13 @@ public final class UserService {
 
     public UserDTO updateUser(Long id, UserUpdateDTO userDTO) {
         var user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PUT method error: Id " + id + " not found"));
+                .orElseThrow(() -> new RuntimeException("User with id = " + id + " not found"));
         userMapper.update(userDTO, user);
         userRepository.save(user);
         return userMapper.map(user);
     }
 
     public void deleteUser(Long id) {
-        var user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Delete method error: Id " + id + " not found"));
         userRepository.deleteById(id);
     }
 }

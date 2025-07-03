@@ -3,7 +3,6 @@ package hexlet.code.model;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 import java.time.LocalDate;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
@@ -33,6 +32,5 @@ public class TaskStatus implements BaseEntity {
     private String slug;
 
     @CreatedDate
-    @JsonFormat(pattern = "[yyyy, mm, dd]", timezone = "UTC")
     private LocalDate createdAt;
 }

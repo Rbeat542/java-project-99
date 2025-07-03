@@ -8,7 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 @Component
-public final class TaskSpecification {
+public class TaskSpecification {
     public Specification<Task> build(TaskParamsDTO params) {
         var spec =  Specification.allOf(
                         withTitleCont(params.titleCont()))

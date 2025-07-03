@@ -45,9 +45,7 @@ public class ModelGenerator {
 
     @PostConstruct
     public void init() {
-        taskRepository.deleteAll();
-        taskStatusRepository.deleteAll();
-        labelRepository.deleteAll();
+
         userModel = Instancio.of(User.class)
                 .ignore(field(User::getId))
                 .supply(field(User::getFirstName), () -> faker.name().firstName())

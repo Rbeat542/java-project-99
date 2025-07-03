@@ -1,8 +1,11 @@
 package hexlet.code.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.task.TaskCreateDTO;
+import hexlet.code.dto.task.TaskDTO;
 import hexlet.code.dto.task.TaskUpdateDTO;
+import hexlet.code.mapper.TaskMapper;
 import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.repository.LabelRepository;
@@ -24,6 +27,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -67,32 +72,41 @@ class TaskControllerTests extends TestKeyGenerator {
 
     private Task testTask;
 
+    @Autowired
+    private TaskMapper taskMapper;
+
     @BeforeEach
-    public void setUp() {
+    public void init() {
+        taskRepository.deleteAll();
+        labelRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
         modelGenerator.init();
+
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .apply(springSecurity())
                 .build();
         testTask = Instancio.of(modelGenerator.getTaskModel()).create();
+        taskRepository.save(testTask);
     }
 
     @Test
     public void testIndex() throws Exception {
-        taskRepository.save(testTask);
         var result = mockMvc.perform(get("/api/tasks").with(jwt()))
                 .andExpect(status().isOk())
                 .andReturn();
 
         var body = result.getResponse().getContentAsString();
-        assertThatJson(body).isArray();
-        assertThat(body).contains(testTask.getName());
-        assertThat(body).contains(testTask.getDescription());
+        List<TaskDTO> taskDTOS = om.readValue(body, new TypeReference<>() { });
+
+        var expected = taskDTOS;
+        var actual = taskRepository.findAll().stream().map(taskMapper::map).toList();
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @Test
     public void testShowTask() throws Exception {
-        taskRepository.save(testTask);
         var id = testTask.getId();
         var request = get("/api/tasks/" + id).with(jwt());
 
@@ -100,9 +114,10 @@ class TaskControllerTests extends TestKeyGenerator {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        var task = taskRepository.findById(id).get();
-        assertThat(task.getName()).isEqualTo(testTask.getName());
-        assertThat(task.getDescription()).isEqualTo(testTask.getDescription());
+        var body = result.getResponse().getContentAsString();
+        assertThatJson(body).and(
+                v -> v.node("title").isEqualTo(testTask.getName()),
+                v -> v.node("content").isEqualTo(testTask.getDescription()));
     }
 
     @Test
@@ -111,28 +126,25 @@ class TaskControllerTests extends TestKeyGenerator {
         var newStatus = newTask.getTaskStatus();
         var newName = newTask.getName();
 
-        var updateData = new TaskCreateDTO();
-        updateData.setStatus(newStatus.getSlug());
-        updateData.setTitle(newName);
+        var newData = new TaskCreateDTO();
+        newData.setStatus(newStatus.getSlug());
+        newData.setTitle(newName);
 
         var request = post("/api/tasks").with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(updateData));
+                .content(om.writeValueAsString(newData));
 
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
-        var task = taskRepository.findFirstByNameOrderByCreatedAtDesc(updateData.getTitle()).get();
-        assertThat(task).isNotNull();
+        var task = taskRepository.findFirstByNameOrderByCreatedAtDesc(newData.getTitle()).get();
         assertThat(task.getName()).isEqualTo(newName);
         assertThat(task.getTaskStatus().getId()).isEqualTo(newStatus.getId());
     }
 
     @Test
     public void testUpdateTask() throws Exception {
-        taskRepository.save(testTask);
         var id = testTask.getId();
-
         var taskUpdateData = Instancio.of(modelGenerator.getTaskModel()).create();
 
         var updateData = new TaskUpdateDTO();
@@ -154,9 +166,7 @@ class TaskControllerTests extends TestKeyGenerator {
 
     @Test
     public void testDeleteTask() throws Exception {
-        taskRepository.save(testTask);
         var id = testTask.getId();
-
         var request = delete("/api/tasks/" + id)
                 .with(jwt());
 
@@ -168,10 +178,9 @@ class TaskControllerTests extends TestKeyGenerator {
 
     @Test
     public void testDeleteUnauthorizedTask() throws Exception {
-        taskRepository.save(testTask);
         var id = testTask.getId();
-
         var request = delete("/api/tasks/" + id);
+
         mockMvc.perform(request)
                 .andExpect(status().is(401));
 
@@ -180,11 +189,10 @@ class TaskControllerTests extends TestKeyGenerator {
 
     @Test
     public void testGetTasksWithParams() throws Exception {
-        var newTask = Instancio.of(modelGenerator.getTaskModel()).create();
-        var status = newTask.getTaskStatus().getSlug();
-        var assigneeId = newTask.getAssignee().getId();
-        var title = newTask.getName();
-        var labelId = newTask.getLabels().stream()
+        var status = testTask.getTaskStatus().getSlug();
+        var assigneeId = testTask.getAssignee().getId();
+        var title = testTask.getName();
+        var labelId = testTask.getLabels().stream()
                 .map(Label::getId)
                 .findFirst()
                 .orElse(null);
@@ -200,10 +208,14 @@ class TaskControllerTests extends TestKeyGenerator {
 
         var request = get("/api/tasks" + query.toString()).with(jwt());
 
-        mockMvc.perform(request)
-                .andExpect(status().isOk());
+        var result  = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
 
-        //assertThat(task.getTaskStatus().getId()).isEqualTo(newStatus.getId());
+        var body = result.getResponse().getContentAsString();
+        var taskDTOS = om.readValue(body, new TypeReference<List<TaskDTO>>() { });
+
+        assertThat(testTask.getName()).isEqualTo(taskDTOS.get(0).getTitle());
+        assertThat(testTask.getDescription()).isEqualTo(taskDTOS.get(0).getContent());
     }
-
 }

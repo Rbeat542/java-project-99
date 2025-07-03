@@ -70,7 +70,11 @@ class UserControllerTests extends TestKeyGenerator {
     private PasswordEncoder passwordEncoder;
 
     @BeforeEach
-    public void setUp() {
+    public void init() {
+        taskRepository.deleteAll();
+        labelRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
         modelGenerator.init();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
@@ -78,11 +82,11 @@ class UserControllerTests extends TestKeyGenerator {
                 .apply(springSecurity())
                 .build();
         testUser = Instancio.of(modelGenerator.getUserModel()).create();
+        userRepository.save(testUser);
     }
 
     @Test
     public void testIndex() throws Exception {
-        userRepository.save(testUser);
         var result = mockMvc.perform(get("/api/users").with(jwt()))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -95,7 +99,6 @@ class UserControllerTests extends TestKeyGenerator {
 
     @Test
     public void testShowUser() throws Exception {
-        userRepository.save(testUser);
         var id = testUser.getId();
         var request = get("/api/users/" + id).with(jwt());
 
@@ -103,25 +106,28 @@ class UserControllerTests extends TestKeyGenerator {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        var user = userRepository.findById(id).get();
-        assertThat(user.getEmail()).isEqualTo(testUser.getEmail());
-        assertThat(user.getPassword()).isEqualTo(testUser.getPassword());
+        var body = result.getResponse().getContentAsString();
+        assertThatJson(body).and(
+                v -> v.node("firstName").isEqualTo(testUser.getFirstName()),
+                v -> v.node("lastName").isEqualTo(testUser.getLastName()),
+                v -> v.node("email").isEqualTo(testUser.getUsername()));
     }
 
     @Test
     public void testCreateUser() throws Exception {
+        var newData = Instancio.of(modelGenerator.getUserModel()).create();
         var request = post("/api/users").with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(testUser));
+                .content(om.writeValueAsString(newData));
 
         mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
-        var user = userRepository.findByEmail(testUser.getUsername()).get();
+        var user = userRepository.findByEmail(newData.getUsername()).get();
         assertThat(user).isNotNull();
-        assertThat(user.getFirstName()).isEqualTo(testUser.getFirstName());
-        assertThat(user.getLastName()).isEqualTo(testUser.getLastName());
-        assertThat(passwordEncoder.matches(testUser.getPassword(), user.getPassword())).isTrue();
+        assertThat(user.getFirstName()).isEqualTo(newData.getFirstName());
+        assertThat(user.getLastName()).isEqualTo(newData.getLastName());
+        assertThat(passwordEncoder.matches(newData.getPassword(), user.getPassword())).isTrue();
     }
 
     @Test
@@ -140,7 +146,6 @@ class UserControllerTests extends TestKeyGenerator {
 
     @Test
     public void testUpdateUser() throws Exception {
-        userRepository.save(testUser);
         var newUserData = Instancio.of(modelGenerator.getUserModel()).create();
         var id = testUser.getId();
         var request = put("/api/users/" + id)
@@ -160,7 +165,6 @@ class UserControllerTests extends TestKeyGenerator {
 
     @Test
     public void testDeleteUser() throws Exception {
-        userRepository.save(testUser);
         var id = testUser.getId();
 
         var request = delete("/api/users/" + id)
@@ -176,20 +180,18 @@ class UserControllerTests extends TestKeyGenerator {
 
     @Test
     public void testDeleteWrongUser() throws Exception {
-        userRepository.save(testUser);
-        var admin = userRepository.findByEmail("hexlet@example.com").get();
-        var id = admin.getId();
+        var user = Instancio.of(modelGenerator.getUserModel()).create();
+        var id = testUser.getId();
         var request = delete("/api/users/" + id)
-                .with(jwt().jwt(jwt -> jwt.claim("email", testUser.getEmail()).subject(testUser.getEmail())));
+                .with(jwt().jwt(jwt -> jwt.claim("email", user.getEmail())));
         mockMvc.perform(request)
-                .andExpect(status().is(403));
+                .andExpect(status().isForbidden());
 
         assertThat(userRepository.findById(id)).isNotEmpty();
     }
 
     @Test
     public void testDeleteUnauthorizedUser() throws Exception {
-        userRepository.save(testUser);
         var id = testUser.getId();
         var request = delete("/api/users/" + id);
 

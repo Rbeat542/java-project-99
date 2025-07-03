@@ -7,28 +7,23 @@ import hexlet.code.dto.task.TaskUpdateDTO;
 import hexlet.code.mapper.TaskMapper;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import hexlet.code.specification.TaskSpecification;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-public final class TaskService {
+@AllArgsConstructor
+public class TaskService {
 
-    @Autowired
-    private TaskRepository repository;
+    private final TaskRepository repository;
 
-    @Autowired
-    private TaskMapper taskMapper;
+    private final TaskMapper taskMapper;
 
-    @Autowired
-    private LabelRepository labelRepository;
+    private final LabelRepository labelRepository;
 
-    @Autowired
-    private TaskSpecification specification;
+    private final TaskSpecification specification;
 
     public List<TaskDTO> getAllWithParams(TaskParamsDTO params) {
         if (params.titleCont() == null
@@ -44,8 +39,6 @@ public final class TaskService {
 
         return result.collect(Collectors.toList());
 
-        //return repository.findAll(spec).stream().map(taskMapper::map)
-        //        .toList();
     }
 
     public TaskDTO create(TaskCreateDTO taskData) {

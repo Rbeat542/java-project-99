@@ -85,9 +85,6 @@ public abstract class TaskMapper {
             return Collections.emptySet();
         }
         var labelsList = labelRepository.findAllById(labelIds); //bc of DB perfomance
-        if (labelsList.size() != labelIds.size()) {
-            throw new IllegalArgumentException("Some labels not found: ");
-        }
         return new HashSet<>(labelsList);
     }
 
