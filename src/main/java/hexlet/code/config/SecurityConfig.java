@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import hexlet.code.service.CustomUserDetailsService;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -66,8 +67,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider daoAuthProvider(AuthenticationManagerBuilder auth, UserDetailsService
             userDetailsService, PasswordEncoder passwordEncoder) {
-        var provider = new DaoAuthenticationProvider(userService);
-        //provider.setUserDetailsService();
+        var provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userService);
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
