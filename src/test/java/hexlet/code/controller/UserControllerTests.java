@@ -1,10 +1,9 @@
 package hexlet.code.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import hexlet.code.dto.user.UserDTO;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
-import hexlet.code.repository.LabelRepository;
-import hexlet.code.repository.TaskRepository;
-import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import hexlet.code.util.TestKeyGenerator;
@@ -25,8 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -38,16 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 class UserControllerTests extends TestKeyGenerator {
 
     @Autowired
-    LabelRepository labelRepository;
-
-    @Autowired
-    TaskRepository taskRepository;
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
-    TaskStatusRepository taskStatusRepository;
 
     @Autowired
     UserMapper userMapper;
@@ -71,9 +61,6 @@ class UserControllerTests extends TestKeyGenerator {
 
     @BeforeEach
     public void init() {
-        taskRepository.deleteAll();
-        labelRepository.deleteAll();
-        taskStatusRepository.deleteAll();
         userRepository.deleteAll();
         modelGenerator.init();
 
@@ -92,9 +79,11 @@ class UserControllerTests extends TestKeyGenerator {
                 .andReturn();
 
         var body = result.getResponse().getContentAsString();
-        assertThatJson(body).isArray();
-        assertThat(body).contains(testUser.getFirstName());
-        assertThat(body).contains(testUser.getLastName());
+        List<UserDTO> userDTOS = om.readValue(body, new TypeReference<>() { });
+
+        var expected = userDTOS;
+        var actual = userRepository.findAll().stream().map(userMapper::map).toList();
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @Test

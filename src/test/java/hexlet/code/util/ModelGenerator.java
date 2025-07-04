@@ -54,28 +54,17 @@ public class ModelGenerator {
                 .supply(field(User::getPasswordDigest), () -> faker.internet().password(3, 20))
                 .toModel();
 
-        user = Instancio.of(userModel).create();
-        user = userRepository.save(user);
-
-
         taskStatusModel = Instancio.of(TaskStatus.class)
                 .ignore(field(TaskStatus::getId))
                 .supply(field(TaskStatus::getName), () -> faker.lorem().word())
                 .supply(field(TaskStatus::getSlug), () -> faker.lorem().word())
                 .toModel();
 
-        taskStatus = Instancio.of(taskStatusModel).create();
-        taskStatus = taskStatusRepository.save(taskStatus);
-
-
         labelModel = Instancio.of(Label.class)
                 .ignore(field(Label::getId))
                 .supply(field(Label::getName), () -> faker.lorem().characters(3, 20))
+                .ignore(field(Label::getTasks))
                 .toModel();
-
-        label = Instancio.of(labelModel).create();
-        label = labelRepository.save(label);
-        labelSet = Set.of(label);
 
         taskModel = Instancio.of(Task.class)
                 .ignore(field(Task::getId))

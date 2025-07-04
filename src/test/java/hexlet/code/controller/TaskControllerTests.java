@@ -27,7 +27,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,8 +89,25 @@ class TaskControllerTests extends TestKeyGenerator {
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .apply(springSecurity())
                 .build();
-        testTask = Instancio.of(modelGenerator.getTaskModel()).create();
-        taskRepository.save(testTask);
+
+        var testTask = Instancio.of(modelGenerator.getTaskModel()).create();
+        var testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
+        var testStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
+        var testUser = Instancio.of(modelGenerator.getUserModel()).create();
+
+        // Связываем обе стороны
+        testTask.setTaskStatus(testStatus);
+        testTask.setAssignee(testUser);
+        testTask.setLabels(Set.of(testLabel));           // в Task добавляем Label
+        testLabel.setTasks(new ArrayList<>(List.of(testTask))); // в Label добавляем Task
+
+        // Сохраняем
+        userRepository.save(testUser);
+        labelRepository.save(testLabel); // сначала Label, чтобы не было TransientObjectException
+        taskStatusRepository.save(testStatus);
+        taskRepository.save(testTask);   // потом Task
+
+        this.testTask = testTask;
     }
 
     @Test
@@ -122,24 +141,22 @@ class TaskControllerTests extends TestKeyGenerator {
 
     @Test
     public void testCreateTask() throws Exception {
-        var newTask = Instancio.of(modelGenerator.getTaskModel()).create();
-        var newStatus = newTask.getTaskStatus();
-        var newName = newTask.getName();
-
+        var status = testTask.getTaskStatus().getSlug();
+        var title = "Test title";
         var newData = new TaskCreateDTO();
-        newData.setStatus(newStatus.getSlug());
-        newData.setTitle(newName);
+        newData.setStatus(status);
+        newData.setTitle(title);
 
         var request = post("/api/tasks").with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(newData));
+        var result = mockMvc.perform(request)
+                .andExpect(status().isCreated())
+                .andReturn();
 
-        mockMvc.perform(request)
-                .andExpect(status().isCreated());
-
-        var task = taskRepository.findFirstByNameOrderByCreatedAtDesc(newData.getTitle()).get();
-        assertThat(task.getName()).isEqualTo(newName);
-        assertThat(task.getTaskStatus().getId()).isEqualTo(newStatus.getId());
+        var task = taskRepository.findFirstByNameOrderByCreatedAtDesc(title).get();
+        assertThat(task.getName()).isEqualTo(title);
+        assertThat(task.getTaskStatus().getSlug()).isEqualTo(status);
     }
 
     @Test

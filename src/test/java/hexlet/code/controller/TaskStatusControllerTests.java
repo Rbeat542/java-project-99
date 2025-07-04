@@ -6,10 +6,7 @@ import hexlet.code.dto.taskStatus.TaskStatusCreateDTO;
 import hexlet.code.dto.taskStatus.TaskStatusDTO;
 import hexlet.code.mapper.TaskStatusMapper;
 import hexlet.code.model.TaskStatus;
-import hexlet.code.repository.LabelRepository;
-import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
-import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import hexlet.code.util.TestKeyGenerator;
 import org.instancio.Instancio;
@@ -40,15 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TaskStatusControllerTests extends TestKeyGenerator {
 
     @Autowired
-    LabelRepository labelRepository;
-
-    @Autowired
-    TaskRepository taskRepository;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
     TaskStatusRepository taskStatusRepository;
 
     @Autowired
@@ -70,10 +58,7 @@ class TaskStatusControllerTests extends TestKeyGenerator {
 
     @BeforeEach
     public void init() {
-        taskRepository.deleteAll();
-        labelRepository.deleteAll();
         taskStatusRepository.deleteAll();
-        userRepository.deleteAll();
         modelGenerator.init();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)

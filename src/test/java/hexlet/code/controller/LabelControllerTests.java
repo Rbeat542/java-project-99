@@ -1,12 +1,12 @@
 package hexlet.code.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.AppApplication;
+import hexlet.code.dto.label.LabelDTO;
+import hexlet.code.mapper.LabelMapper;
 import hexlet.code.model.Label;
 import hexlet.code.repository.LabelRepository;
-import hexlet.code.repository.TaskRepository;
-import hexlet.code.repository.TaskStatusRepository;
-import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import hexlet.code.util.TestKeyGenerator;
 import org.instancio.Instancio;
@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -40,15 +42,6 @@ class LabelControllerTests extends TestKeyGenerator {
     LabelRepository labelRepository;
 
     @Autowired
-    TaskRepository taskRepository;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    TaskStatusRepository taskStatusRepository;
-
-    @Autowired
     MockMvc mockMvc;
 
     @Autowired
@@ -56,6 +49,9 @@ class LabelControllerTests extends TestKeyGenerator {
 
     @Autowired
     private ObjectMapper om;
+
+    @Autowired
+    private LabelMapper labelMapper;
 
     @Autowired
     private ModelGenerator modelGenerator;
@@ -67,16 +63,14 @@ class LabelControllerTests extends TestKeyGenerator {
 
     @BeforeEach
     public void init() {
-        taskRepository.deleteAll();
         labelRepository.deleteAll();
-        taskStatusRepository.deleteAll();
-        userRepository.deleteAll();
         modelGenerator.init();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .apply(springSecurity())
                 .build();
+
         testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
         labelRepository.save(testLabel);
     }
@@ -88,8 +82,12 @@ class LabelControllerTests extends TestKeyGenerator {
                 .andReturn();
 
         var body = result.getResponse().getContentAsString();
-        assertThatJson(body).isArray();
-        assertThat(body).contains(testLabel.getName());
+
+        List<LabelDTO> labelDTOS = om.readValue(body, new TypeReference<>() { });
+
+        var expected = labelDTOS;
+        var actual = labelRepository.findAll().stream().map(labelMapper::map).toList();
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @Test
