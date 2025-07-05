@@ -55,7 +55,7 @@ public class UserController {
 
     @PutMapping(path = "/{id}")
     @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
-    public UserDTO patch(@PathVariable Long id, @RequestBody UserUpdateDTO dto) {
+    public UserDTO patch(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO dto) {
         return userService.updateUser(id, dto);
     }
 

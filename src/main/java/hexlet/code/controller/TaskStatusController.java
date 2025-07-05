@@ -53,7 +53,7 @@ public class TaskStatusController {
 
     @PutMapping("/task_statuses/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TaskStatusDTO patch(@PathVariable Long id, @RequestBody TaskStatusUpdateDTO dto)
+    public TaskStatusDTO patch(@PathVariable Long id, @Valid @RequestBody TaskStatusUpdateDTO dto)
             throws Exception {
         return taskStatusService.update(id, dto);
     }

@@ -4,10 +4,6 @@ import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
-import hexlet.code.repository.LabelRepository;
-import hexlet.code.repository.TaskRepository;
-import hexlet.code.repository.TaskStatusRepository;
-import hexlet.code.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
@@ -15,7 +11,6 @@ import org.instancio.Model;
 import org.instancio.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.util.Set;
 import static org.instancio.Select.field;
 
 @Component
@@ -24,24 +19,9 @@ public class ModelGenerator {
     private Model<User> userModel;
     private Model<Task> taskModel;
     private Model<Label> labelModel;
-    private Set<Label> labelSet;
-    private Label label;
-    private TaskStatus taskStatus;
-    private User user;
 
     @Autowired
     private Faker faker;
-
-    @Autowired
-    private LabelRepository labelRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TaskStatusRepository taskStatusRepository;
-    @Autowired
-    private TaskRepository taskRepository;
 
     @PostConstruct
     public void init() {
@@ -71,9 +51,9 @@ public class ModelGenerator {
                 .supply(field(Task::getIndex), () -> Integer.parseInt(faker.number().digits(4)))
                 .supply(field(Task::getName), () -> faker.lorem().word())
                 .supply(field(Task::getDescription), () -> faker.lorem().sentence())
-                .supply(Select.field(Task::getTaskStatus), () -> taskStatus)
-                .supply(field(Task::getLabels), () -> labelSet)
-                .supply(field(Task::getAssignee), () -> user)
+                .ignore(Select.field(Task::getTaskStatus))
+                .ignore(field(Task::getLabels))
+                .ignore(field(Task::getAssignee))
                 .toModel();
 
     }

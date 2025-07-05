@@ -48,9 +48,10 @@ public class LabelController {
         return labelService.findById(id);
 
     }
+
     @PutMapping("/labels/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public LabelDTO patch(@PathVariable Long id, @RequestBody LabelUpdateDTO dto) throws Exception {
+    public LabelDTO patch(@PathVariable Long id, @Valid @RequestBody LabelUpdateDTO dto) throws Exception {
         return labelService.update(id, dto);
     }
 
